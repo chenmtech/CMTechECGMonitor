@@ -101,7 +101,7 @@ static void ADS1x9x_SetRegsAsNormalECGSignal();
 extern void ADS1x9x_Init(ADS_DataCB_t pfnADS_DataCB_t)
 {
   // ³õÊ¼»¯SPIÄ£¿é
-  SPI_ADS_Setup();  
+  SPI_Init();  
   
   ADS1x9x_ReadAllRegister(defaultRegs); 
   

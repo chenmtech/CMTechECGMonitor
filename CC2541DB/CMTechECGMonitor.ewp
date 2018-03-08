@@ -126,15 +126,15 @@
         </option>
         <option>
           <name>ExePath</name>
-          <state>CC2541DK-MINI Keyfob\Exe</state>
+          <state>CMTechECGMonitor\Exe</state>
         </option>
         <option>
           <name>ObjPath</name>
-          <state>CC2541DK-MINI Keyfob\Obj</state>
+          <state>CMTechECGMonitor\Obj</state>
         </option>
         <option>
           <name>ListPath</name>
-          <state>CC2541DK-MINI Keyfob\List</state>
+          <state>CMTechECGMonitor\List</state>
         </option>
         <option>
           <name>GOutputBinary</name>
