@@ -6,7 +6,9 @@
 
 
 
-//静态常量
+/*
+ * 局部常量
+*/
 
 //当用内部测试信号时的寄存器值
 const static uint8 testRegs[12] = {  
@@ -36,6 +38,7 @@ const static uint8 testRegs[12] = {
   0x0C                      //
 };	
 
+// 正常采样时寄存器的值
 const static uint8 normalECGRegs[12] = {  
   //DEVID
   0x52,
@@ -63,14 +66,17 @@ const static uint8 normalECGRegs[12] = {
   0x0C                      //
 };
 
-//静态变量
-static uint8 defaultRegs[12];    //存放重启后缺省的寄存器值
+/*
+ * 局部变量
+*/
+// 重启后读出来的缺省寄存器值
+static uint8 defaultRegs[12];
 
-//采样数据后的回调函数变量
+// 用于保存采样数据后的回调函数
 static ADS_DataCB_t ADS_DataCB;
 
-//每次需要读取的数据字节，包括状态字节和通道数据
-static uint8 data[NUM_PER_SAMPLE];
+//每次读取的数据字节，包括状态字节和通道数据
+static uint8 data[DATA_LEN];
 
 //保存一个通道的ECG数据
 static uint8 bytes[4] = {0};
@@ -82,19 +88,23 @@ static int16 aaa = 0;
 static uint8 tmp1 = 1;
 
 
-/****************************************************************/
-/* 静态函数*/
-/****************************************************************/
+/****************************************************************
+ * 局部函数声明
+****************************************************************/
+
+// us延时
 static void Delay_us(uint16 us);
 
+// 执行命令
 static void execute(uint8 cmd);
 
+// 读一个采样值
 static void readOneSample(void);
 
-//使用内部测试信号
+//设置寄存器，以采集内部测试信号
 static void ADS1x9x_SetRegsAsTestSignal();
 
-//正常采集ECG信号
+//设置寄存器，以正常采集ECG信号
 static void ADS1x9x_SetRegsAsNormalECGSignal();
 
 
@@ -105,10 +115,12 @@ extern void ADS1x9x_Init(ADS_DataCB_t pfnADS_DataCB_t)
   
   ADS1x9x_ReadAllRegister(defaultRegs); 
   
+  // 设置正常采集寄存器值
   //ADS1x9x_SetRegsAsNormalECGSignal();
+  // 设置采集内部测试信号时的寄存器值
   ADS1x9x_SetRegsAsTestSignal();
   
-  //设置样本数据处理钩子
+  //设置采样数据后的回调函数
   ADS_DataCB = pfnADS_DataCB_t;
 }
 

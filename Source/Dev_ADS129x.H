@@ -1,6 +1,8 @@
 /*
- * 实现ADS129x芯片的所有功能
- * 主要包括：1、读写寄存器；2、控制ADS129x; 3、读采样数据
+ * Dev_ADS129x.h : ADS129x芯片的设备驱动程序头文件
+
+ * 实现ADS129x芯片的主要功能
+ * 包括：1、读写寄存器；2、控制ADS129x; 3、读采样数据
 
 */
 
@@ -10,7 +12,11 @@
 #include "hal_spi_ADS.h"
 #include <hal_types.h>
 
-//System Commands
+/*
+ * 常数
+*/
+
+//SPI接口命令
 #define WAKEUP		0x02		//Wake-up from standby mode
 #define STANDBY	        0x04	        //Enter standby mode
 #define RESET		0x06		//Reset the device
@@ -54,7 +60,7 @@
 
 
 
-#define NUM_PER_SAMPLE  6               //ADS1291每次接收数据长度为6个字节：状态3字节，通道1为3字节，通道2没有输出
+#define DATA_LEN  6               //ADS1291每次接收数据长度为6个字节：状态3字节，通道1为3字节，通道2没有输出
 
 
 
@@ -63,20 +69,43 @@
 typedef void (*ADS_DataCB_t)(int oneData); 
 
 
-/****************************************************************/
-/* extern functions*/
-/****************************************************************/
+/****************************************************************
+ * 外部函数
+****************************************************************/
+// 初始化
 extern void ADS1x9x_Init(ADS_DataCB_t pfnADS_DataCB_t);
+
+// 唤醒
 extern void ADS1x9x_WakeUp(void);
+
+// 待机
 extern void ADS1x9x_StandBy(void);
+
+// 重启
 extern void ADS1x9x_Reset(void);
+
+// 启动转换
 extern void ADS1x9x_StartConvert(void);
+
+// 停止转换
 extern void ADS1x9x_StopConvert(void);
+
+// 读一个寄存器
 extern uint8 ADS1x9x_ReadRegister(uint8 address);
+
+// 读多个寄存器
 extern void ADS1x9x_ReadMultipleRegister(uint8 beginaddr, uint8 * pRegs, uint8 len);
+
+// 读所有寄存器
 extern void ADS1x9x_ReadAllRegister(uint8 * pRegs);
+
+// 写一个寄存器
 extern void ADS1x9x_WriteRegister(uint8 address, uint8 onebyte);
+
+// 写多个寄存器
 extern void ADS1x9x_WriteMultipleRegister(uint8 beginaddr, const uint8 * pRegs, uint8 len);
+
+// 写所有寄存器
 extern void ADS1x9x_WriteAllRegister(const uint8 * pRegs);
 
 #endif
