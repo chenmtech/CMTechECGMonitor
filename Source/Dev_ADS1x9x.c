@@ -1,5 +1,5 @@
 
-#include "Dev_ADS129x.H"
+#include "Dev_ADS1x9x.H"
 #include "hal_mcu.h"
 
 //#define ADS_IS_START()                  (ADS_START_PxOUT & ADS_START)
@@ -75,21 +75,16 @@ static uint8 defaultRegs[12];
 // 用于保存采样数据后的回调函数
 static ADS_DataCB_t ADS_DataCB;
 
-//每次读取的数据字节，包括状态字节和通道数据
-static uint8 data[DATA_LEN];
+// 接收到的3字节状态
+static uint8 status[3] = {0};
 
-//保存一个通道的ECG数据
-static uint8 bytes[4] = {0};
+//读取的通道数据字节
+static uint8 data[4];
 
-static long tmp = 0;
-
-static int16 aaa = 0;
-
-static uint8 tmp1 = 1;
 
 
 /****************************************************************
- * 局部函数声明
+ * 局部函数
 ****************************************************************/
 
 // us延时
@@ -99,172 +94,13 @@ static void Delay_us(uint16 us);
 static void execute(uint8 cmd);
 
 // 读一个采样值
-static void readOneSample(void);
+static void ADS1291_ReadOneSample(void);
 
 //设置寄存器，以采集内部测试信号
 static void ADS1x9x_SetRegsAsTestSignal();
 
 //设置寄存器，以正常采集ECG信号
 static void ADS1x9x_SetRegsAsNormalECGSignal();
-
-
-extern void ADS1x9x_Init(ADS_DataCB_t pfnADS_DataCB_t)
-{
-  // 初始化SPI模块
-  SPI_Init();  
-  
-  ADS1x9x_ReadAllRegister(defaultRegs); 
-  
-  // 设置正常采集寄存器值
-  //ADS1x9x_SetRegsAsNormalECGSignal();
-  // 设置采集内部测试信号时的寄存器值
-  ADS1x9x_SetRegsAsTestSignal();
-  
-  //设置采样数据后的回调函数
-  ADS_DataCB = pfnADS_DataCB_t;
-}
-
-extern void ADS1x9x_WakeUp(void)
-{
-  execute(WAKEUP);
-}
-
-extern void ADS1x9x_StandBy(void)
-{
-  execute(STANDBY);
-}
-
-extern void ADS1x9x_Reset(void)
-{
-  P1 &= ~(1<<1);    //PWDN/RESET 低电平
-  Delay_us(10);
-  P1 |= (1<<1);    //PWDN/RESET 高电平
-  Delay_us(50);
-}
-
-extern void ADS1x9x_StartConvert(void)
-{
-  //设置连续采样模式
-  ADS_CS_LOW();  
-  SPI_ADS_SendByte(SDATAC);
-  SPI_ADS_SendByte(RDATAC);  
-  Delay_us(10);
-  ADS_CS_HIGH();   
-  
-  P1 |= (1<<0);    //START 高电平
-  Delay_us(16000); 
-}
-
-extern void ADS1x9x_StopConvert(void)
-{
-  ADS_CS_LOW();  
-  SPI_ADS_SendByte(SDATAC);
-  Delay_us(10);
-  ADS_CS_HIGH();   
-  
-  P1 &= ~(1<<0);    //START 低电平 
-  Delay_us(16000); 
-}
-
-extern void ADS1x9x_ReadAllRegister(uint8 * pRegs)
-{
-  ADS1x9x_ReadMultipleRegister(0x00, pRegs, 12);
-}
-
-extern void ADS1x9x_ReadMultipleRegister(uint8 beginaddr, uint8 * pRegs, uint8 len)
-{
-  ADS_CS_LOW();
-  
-  SPI_ADS_SendByte(SDATAC);
-  SPI_ADS_SendByte(beginaddr | 0x20);               //发送RREG命令
-  SPI_ADS_SendByte(len-1);                          //长度-1
-  
-  for(uint8 i = 0; i < len; i++)
-    *(pRegs+i) = SPI_ADS_SendByte(ADS_DUMMY_CHAR);
-
-  Delay_us(10);
-  ADS_CS_HIGH();
-}
-
-extern uint8 ADS1x9x_ReadRegister(uint8 address)
-{
-  uint8 ret = 0;
-
-  ADS_CS_LOW();
-  
-  SPI_ADS_SendByte(SDATAC);  
-  SPI_ADS_SendByte(address | 0x20);         //发送RREG命令
-  SPI_ADS_SendByte(0);                      //长度为1
-  ret = SPI_ADS_SendByte(ADS_DUMMY_CHAR);   //读寄存器
-  
-  Delay_us(10);
-  ADS_CS_HIGH();
-  return ret;
-}
-
-extern void ADS1x9x_WriteAllRegister(const uint8 * pRegs)
-{
-  ADS1x9x_WriteMultipleRegister(0x00, pRegs, 12);
-}
-
-extern void ADS1x9x_WriteMultipleRegister(uint8 beginaddr, const uint8 * pRegs, uint8 len)
-{
-  ADS_CS_LOW();
-  
-  SPI_ADS_SendByte(SDATAC);  
-  SPI_ADS_SendByte(beginaddr | 0x40);
-  SPI_ADS_SendByte(len-1);
-  
-  for(uint8 i = 0; i < len; i++)
-    SPI_ADS_SendByte( *(pRegs+i) );
-     
-  Delay_us(10); 
-  ADS_CS_HIGH();
-} 
-
-extern void ADS1x9x_WriteRegister(uint8 address, uint8 onebyte)
-{
-  ADS_CS_LOW();
-  
-  SPI_ADS_SendByte(SDATAC);  
-  SPI_ADS_SendByte(address | 0x40);
-  SPI_ADS_SendByte(0);  
-  SPI_ADS_SendByte(onebyte);
-  
-  Delay_us(10);
-  ADS_CS_HIGH();
-}  
-
-
-//下面为静态函数
-/******************************************************************************
-//读一个样本
-******************************************************************************/
-static void readOneSample(void)
-{  
-  ADS_CS_LOW();
-  
-  data[0] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);
-  data[1] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);
-  data[2] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);  
-  
-  bytes[3] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);   //MSB
-  bytes[2] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);
-  bytes[1] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);   //LSB
-  
-  ADS_CS_HIGH();
-  
-  tmp = (*((long *)bytes)) >> 12;       //本来右移8位就是实际的数值，但是可能会有一些低位的噪声位，所以需要选择一个合适的右移位数
-  
-  //tmp = (tmp > 32767) ? 32767 : (tmp < -32767) ? -32767 : tmp;
-
-  int d = (int)(tmp);  
-  
-  aaa = d;
-  
-  ADS_DataCB(d);
-}
-
 
 
 /******************************************************************************
@@ -274,10 +110,14 @@ static void execute(uint8 cmd)
 {
   ADS_CS_LOW();
   
+  // 发送停止采样命令
   SPI_ADS_SendByte(SDATAC);
+  
+  // 发送当前命令
   SPI_ADS_SendByte(cmd);
   
   Delay_us(10);
+  
   ADS_CS_HIGH();
 }
 
@@ -308,6 +148,190 @@ static void Delay_us(uint16 us)
   }
 }
 
+
+
+
+
+/*************************************************************
+ * 公共函数
+****************************************************************/
+
+
+// ADS 初始化
+extern void ADS1x9x_Init(ADS_DataCB_t pfnADS_DataCB_t)
+{
+  // 初始化SPI模块
+  SPI_ADS_Init();  
+  
+  // 读缺省寄存器
+  ADS1x9x_ReadAllRegister(defaultRegs); 
+  
+  // 设置正常采集寄存器值
+  //ADS1x9x_SetRegsAsNormalECGSignal();
+  // 设置采集内部测试信号时的寄存器值
+  ADS1x9x_SetRegsAsTestSignal();
+  
+  //设置采样数据后的回调函数
+  ADS_DataCB = pfnADS_DataCB_t;
+}
+
+// 唤醒
+extern void ADS1x9x_WakeUp(void)
+{
+  execute(WAKEUP);
+}
+
+// 待机
+extern void ADS1x9x_StandBy(void)
+{
+  execute(STANDBY);
+}
+
+
+extern void ADS1x9x_Reset(void)
+{
+  ADS_RST_LOW();     //PWDN/RESET 低电平
+  Delay_us(10);
+  ADS_RST_HIGH();    //PWDN/RESET 高电平
+  Delay_us(50);
+}
+
+// 启动采样
+extern void ADS1x9x_StartConvert(void)
+{
+  //设置连续采样模式
+  ADS_CS_LOW();  
+  SPI_ADS_SendByte(SDATAC);
+  SPI_ADS_SendByte(RDATAC);  
+  Delay_us(10);
+  ADS_CS_HIGH();   
+  
+  //START 高电平
+  ADS_START_HIGH();    
+  Delay_us(16000); 
+}
+
+// 停止采样
+extern void ADS1x9x_StopConvert(void)
+{
+  ADS_CS_LOW();  
+  SPI_ADS_SendByte(SDATAC);
+  Delay_us(10);
+  ADS_CS_HIGH();   
+  
+  //START 低电平
+  ADS_START_LOW();
+  Delay_us(16000); 
+}
+
+// 读所有12个寄存器值
+extern void ADS1x9x_ReadAllRegister(uint8 * pRegs)
+{
+  ADS1x9x_ReadMultipleRegister(0x00, pRegs, 12);
+}
+
+// 读多个寄存器值
+extern void ADS1x9x_ReadMultipleRegister(uint8 beginaddr, uint8 * pRegs, uint8 len)
+{
+  ADS_CS_LOW();
+  
+  SPI_ADS_SendByte(SDATAC);
+  SPI_ADS_SendByte(beginaddr | 0x20);               //发送RREG命令
+  SPI_ADS_SendByte(len-1);                          //长度-1
+  
+  for(uint8 i = 0; i < len; i++)
+    *(pRegs+i) = SPI_ADS_SendByte(ADS_DUMMY_CHAR);
+
+  Delay_us(10);
+  ADS_CS_HIGH();
+}
+
+// 读一个寄存器值
+extern uint8 ADS1x9x_ReadRegister(uint8 address)
+{
+  uint8 result = 0;
+
+  ADS_CS_LOW();
+  
+  SPI_ADS_SendByte(SDATAC);  
+  SPI_ADS_SendByte(address | 0x20);         //发送RREG命令
+  SPI_ADS_SendByte(0);                      //长度为1
+  result = SPI_ADS_SendByte(ADS_DUMMY_CHAR);   //读寄存器
+  
+  Delay_us(10);
+  ADS_CS_HIGH();
+  return result;
+}
+
+// 写所有12个寄存器
+extern void ADS1x9x_WriteAllRegister(const uint8 * pRegs)
+{
+  ADS1x9x_WriteMultipleRegister(0x00, pRegs, 12);
+}
+
+// 写多个寄存器值
+extern void ADS1x9x_WriteMultipleRegister(uint8 beginaddr, const uint8 * pRegs, uint8 len)
+{
+  ADS_CS_LOW();
+  
+  SPI_ADS_SendByte(SDATAC);  
+  SPI_ADS_SendByte(beginaddr | 0x40);
+  SPI_ADS_SendByte(len-1);
+  
+  for(uint8 i = 0; i < len; i++)
+    SPI_ADS_SendByte( *(pRegs+i) );
+     
+  Delay_us(10); 
+  ADS_CS_HIGH();
+} 
+
+// 写一个寄存器
+extern void ADS1x9x_WriteRegister(uint8 address, uint8 onebyte)
+{
+  ADS_CS_LOW();
+  
+  SPI_ADS_SendByte(SDATAC);  
+  SPI_ADS_SendByte(address | 0x40);
+  SPI_ADS_SendByte(0);  
+  SPI_ADS_SendByte(onebyte);
+  
+  Delay_us(10);
+  ADS_CS_HIGH();
+}  
+
+
+
+
+/******************************************************************************
+ * 读一个样本
+ * ADS1291是高精度（24bit），单通道芯片
+******************************************************************************/
+static void ADS1291_ReadOneSample(void)
+{  
+  ADS_CS_LOW();
+  
+  status[0] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);
+  status[1] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);
+  status[2] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);  
+  
+  data[3] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);   //MSB
+  data[2] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);
+  data[1] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);   //LSB
+  
+  ADS_CS_HIGH();
+  
+  long value = *((long *)data);
+  
+  // 带符号右移
+  value = (value >> 12);       //本来右移8位就是实际的数值，但是可能会有一些低位的噪声位，所以需要选择一个合适的右移位数
+  
+  //tmp = (tmp > 32767) ? 32767 : (tmp < -32767) ? -32767 : tmp;
+  
+  ADS_DataCB((int)(value));
+}
+
+
+
 #pragma vector = P0INT_VECTOR
 __interrupt void PORT0_ISR(void)
 { 
@@ -319,7 +343,7 @@ __interrupt void PORT0_ISR(void)
     P0IFG &= ~(1<<1);   //clear P0IFG 1 
     P0IF = 0;   //clear P0 IFG
     
-    readOneSample();
+    ADS1291_ReadOneSample();
   }
   
   HAL_EXIT_CRITICAL_SECTION( intState );   // Re-enable interrupts.  

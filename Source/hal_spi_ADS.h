@@ -20,6 +20,20 @@
 // 发送完毕
 #define SPITXDONE             (U1TX_BYTE == 1)        //SPI 1发送完毕
 
+// START PIN : P1_0
+// START低电平
+#define ADS_START_LOW()   P1 &= ~(1<<0)
+
+// START高电平
+#define ADS_START_HIGH()  P1 |= (1<<0)
+
+// RESET PIN : P1_1
+// RESET低电平
+#define ADS_RST_LOW()   P1 &= ~(1<<1)
+
+// RESET高电平
+#define ADS_RST_HIGH()  P1 |= (1<<1)
+
 // 片选CS PIN : P1_2
 // 片选CS低电平
 #define ADS_CS_LOW()    P1 &= ~(1<<2)                    
@@ -29,12 +43,14 @@
 
 
 
+
+
 /*
  * 公共函数
 */
 
 //SPI初始化
-extern void SPI_Init();
+extern void SPI_ADS_Init();
 
 //发送单个字节
 extern unsigned char SPI_ADS_SendByte(const unsigned char data);

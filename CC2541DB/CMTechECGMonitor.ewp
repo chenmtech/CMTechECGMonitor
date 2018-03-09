@@ -6388,13 +6388,13 @@
       <name>$PROJ_DIR$\..\Source\DCand50HzFilter.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\Source\dcand50hzfilter.h</name>
+      <name>$PROJ_DIR$\..\Source\DCand50HzFilter.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\Source\Dev_ADS129x.c</name>
+      <name>$PROJ_DIR$\..\Source\Dev_ADS1x9x.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\Source\Dev_ADS129x.H</name>
+      <name>$PROJ_DIR$\..\Source\Dev_ADS1x9x.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\Source\hal_spi_ADS.c</name>

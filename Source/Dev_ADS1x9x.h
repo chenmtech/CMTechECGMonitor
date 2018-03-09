@@ -1,13 +1,13 @@
 /*
- * Dev_ADS129x.h : ADS129x芯片的设备驱动程序头文件
+ * Dev_ADS1x9x.h : ADS1x9x芯片的设备驱动程序头文件
 
- * 实现ADS129x芯片的主要功能
- * 包括：1、读写寄存器；2、控制ADS129x; 3、读采样数据
+ * 实现ADS1x9x芯片的主要功能
+ * 包括：1、读写寄存器；2、控制ADS1x9x; 3、读采样数据
 
 */
 
-#ifndef DEV_ADS129X_H
-#define DEV_ADS129X_H
+#ifndef DEV_ADS1X9X_H
+#define DEV_ADS1X9X_H
 
 #include "hal_spi_ADS.h"
 #include <hal_types.h>

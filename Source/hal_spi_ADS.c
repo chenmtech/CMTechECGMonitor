@@ -94,7 +94,7 @@ static void spi_setupSPI()
 */
 
 //SPI≥ı ºªØ
-extern void SPI_Init()
+extern void SPI_ADS_Init()
 {
   spi_setupADS();
   spi_setupSPI();
