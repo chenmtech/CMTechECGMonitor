@@ -14,7 +14,7 @@
 
 // ECG Monitor Task Events
 #define ECGMONITOR_START_DEVICE_EVT                   0x0001     // 启动设备事件
-#define ECGMONITOR_START_PERIODIC_EVT                 0x0002     // 周期采集启动事件
+//#define ECGMONITOR_START_PERIODIC_EVT                 0x0002     // 周期采集启动事件
 
 
 // 测量控制标记值
@@ -40,7 +40,7 @@ extern void ECGMonitor_Init( uint8 task_id );
 extern uint16 ECGMonitor_ProcessEvent( uint8 task_id, uint16 events );
 
 
-extern void ECGMonitor_SendECGSignals(uint8* pData, uint8 len);
+//extern void ECGMonitor_SendECGSignals(uint8* pData, uint8 len);
 
 /*********************************************************************
 *********************************************************************/

@@ -23,7 +23,7 @@
 
 
 //每个信号数据包的长度
-#define PACKET_LEN          ECG_DATA_LEN
+//#define PACKET_LEN          ECG_DATA_LEN
 
 /*****************************************************
  * 局部变量
@@ -33,9 +33,9 @@
 static uint8 state = STATE_STOP;
 
 // 数据包
-static int packet[PACKET_LEN] = {0};
+static uint8 buf[ECG_DATA_LEN] = {0};
 
-static uint8 * p = 0;
+//static uint8 * p = 0;
 
 // 当前数据包中已经保存的数据字节数
 static uint8 count = 0;
@@ -53,16 +53,13 @@ static void ECGFunc_ProcessData(int data)
 {
   if(state == STATE_STOP) return;
   
-  *p++ = (uint8)(data & 0x00FF);  
-  count++;
-  *p++ = (uint8)((data >> 8) & 0x00FF);
-  count++;  
+  buf[count++] = (uint8)(data & 0x00FF);  
+  buf[count++] = (uint8)((data >> 8) & 0x00FF);
 
-  if(count == PACKET_LEN)
+  if(count == ECG_DATA_LEN)
   {
     count = 0;
-    p = (uint8*)(&packet[0]);    
-    ECGMonitor_SendECGSignals(p, PACKET_LEN*sizeof(int));    
+    ECGMonitor_SetParameter( ECGMONITOR_DATA, ECG_DATA_LEN, buf );  
   }  
   /*
   if(i < 512)
@@ -94,27 +91,40 @@ extern void ECGFunc_Init()
   
 }
 
-extern void ECGFunc_Start()
+extern void ECGFunc_StartEcg()
 {
-  if(state == STATE_STOP)
-  {
-    count = 0;
-    p = (uint8*)(&packet[0]);
-    ADS1x9x_StartConvert();
-    state = STATE_START;    
+  if(state == STATE_START_ECG) return;
+  
+  if(state == STATE_START_1MV) {
+    ADS1x9x_StopConvert();
+    ADS1x9x_SetRegsAsNormalECGSignal();
   }
+  
+  count = 0;
+  ADS1x9x_StartConvert();
+  state = STATE_START_ECG;
+}
+
+extern void ECGFunc_Start1mV()
+{
+  if(state == STATE_START_1MV) return;
+  
+  if(state == STATE_START_ECG) {
+    ADS1x9x_StopConvert();
+    ADS1x9x_SetRegsAsTestSignal();
+  }
+  
+  count = 0;
+  ADS1x9x_StartConvert();
+  state = STATE_START_1MV;
 }
 
 extern void ECGFunc_Stop()
 {
-  if(state == STATE_START)
+  if(state != STATE_STOP)
   {
     ADS1x9x_StopConvert();
     state = STATE_STOP; 
-    if(count != 0)
-    {
-      ECGMonitor_SendECGSignals(p, num*sizeof(int)); 
-    }
   }
 }
 

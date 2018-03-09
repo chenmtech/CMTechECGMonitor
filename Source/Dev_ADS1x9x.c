@@ -11,7 +11,7 @@
 */
 
 //当用内部测试信号时的寄存器值
-const static uint8 testRegs[12] = {  
+const static uint8 test1mVRegs[12] = {  
   /*使用内部测试信号配置*/
   0x52,
   //CONFIG1
@@ -96,11 +96,6 @@ static void execute(uint8 cmd);
 // 读一个采样值
 static void ADS1291_ReadOneSample(void);
 
-//设置寄存器，以采集内部测试信号
-static void ADS1x9x_SetRegsAsTestSignal();
-
-//设置寄存器，以正常采集ECG信号
-static void ADS1x9x_SetRegsAsNormalECGSignal();
 
 
 /******************************************************************************
@@ -121,16 +116,7 @@ static void execute(uint8 cmd)
   ADS_CS_HIGH();
 }
 
-//使用内部测试信号
-static void ADS1x9x_SetRegsAsTestSignal()
-{
-  ADS1x9x_WriteAllRegister(testRegs); 
-}
 
-static void ADS1x9x_SetRegsAsNormalECGSignal()
-{
-  ADS1x9x_WriteAllRegister(normalECGRegs);   
-}
 
 //延时us
 static void Delay_us(uint16 us)
@@ -269,6 +255,17 @@ extern void ADS1x9x_WriteAllRegister(const uint8 * pRegs)
   ADS1x9x_WriteMultipleRegister(0x00, pRegs, 12);
 }
 
+//使用内部测试信号
+extern void ADS1x9x_SetRegsAsTestSignal()
+{
+  ADS1x9x_WriteAllRegister(test1mVRegs); 
+}
+
+extern void ADS1x9x_SetRegsAsNormalECGSignal()
+{
+  ADS1x9x_WriteAllRegister(normalECGRegs);   
+}
+
 // 写多个寄存器值
 extern void ADS1x9x_WriteMultipleRegister(uint8 beginaddr, const uint8 * pRegs, uint8 len)
 {
@@ -327,7 +324,8 @@ static void ADS1291_ReadOneSample(void)
   
   //tmp = (tmp > 32767) ? 32767 : (tmp < -32767) ? -32767 : tmp;
   
-  ADS_DataCB((int)(value));
+  if(ADS_DataCB != 0)
+    ADS_DataCB((int)(value));
 }
 
 

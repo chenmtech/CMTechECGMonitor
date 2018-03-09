@@ -108,4 +108,9 @@ extern void ADS1x9x_WriteMultipleRegister(uint8 beginaddr, const uint8 * pRegs, 
 // 写所有寄存器
 extern void ADS1x9x_WriteAllRegister(const uint8 * pRegs);
 
+//使用内部测试信号
+extern void ADS1x9x_SetRegsAsTestSignal();
+
+extern void ADS1x9x_SetRegsAsNormalECGSignal();
+
 #endif
