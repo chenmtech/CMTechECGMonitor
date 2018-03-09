@@ -8,7 +8,7 @@
 #ifndef SERVICE_ECGMONITOR_H
 #define SERVICE_ECGMONITOR_H
 
-
+#include "bcomdef.h"
 
 /*********************************************************************
  * 常数
@@ -44,6 +44,9 @@
   
 // ECG Monitor Service bit fields
 #define ECGMONITOR_SERVICE                 0x00000001
+
+// 每个ECG数据包的字节长度
+#define ECG_DATA_LEN 20
 
 
 // Callback events，这些事件是用来通知应用层要处理的事件

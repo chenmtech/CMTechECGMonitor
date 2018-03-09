@@ -3,86 +3,66 @@
 #include "hal_drivers.h"
 #include "hal_mcu.h"
 #include "osal.h"
-#include "cmtechECGMonitor.h"
+#include "CMTechECGMonitor.h"
 #include "App_ECGFunc.h"
 #include "Dev_ADS1x9x.h"
+#include "Service_ECGMonitor.h"
 #include "DCand50HzFilter.h"
 
-#define STATE_STOP          0
-#define STATE_START         1
 
-//每个信号数据包包含8个信号值
-#define PACKET_LEN          8
+/*****************************************************
+ * 常量
+ */
+
+// 停止状态
+#define STATE_STOP              0x00
+// 启动采集ECG状态
+#define STATE_START_ECG         0x01
+// 启动采集1mV定标信号状态
+#define STATE_START_1MV         0x02
 
 
+//每个信号数据包的长度
+#define PACKET_LEN          ECG_DATA_LEN
+
+/*****************************************************
+ * 局部变量
+ */
+
+// 当前状态
 static uint8 state = STATE_STOP;
 
-static uint8 taskID = 0;
-
+// 数据包
 static int packet[PACKET_LEN] = {0};
+
 static uint8 * p = 0;
-static uint8 num = 0;
+
+// 当前数据包中已经保存的数据字节数
+static uint8 count = 0;
 
 
+
+
+/*****************************************************
+ * 局部函数
+ */
 static void ECGFunc_ProcessData(int data);
 
-
-extern void ECGFunc_Init(uint8 TaskID)
-{
-  state = STATE_STOP;
-  taskID = TaskID;
-
-  
-  ADS1x9x_Init(ECGFunc_ProcessData);
-  
-  //ADS1x9x_StartConvert();
-  //state = STATE_START;
-}
-
-extern void ECGFunc_Start()
-{
-  if(state == STATE_STOP)
-  {
-    num = 0;
-    p = (uint8*)(&packet[0]);
-    ADS1x9x_StartConvert();
-    state = STATE_START;    
-  }
-}
-
-extern void ECGFunc_Stop()
-{
-  if(state == STATE_START)
-  {
-    ADS1x9x_StopConvert();
-    state = STATE_STOP; 
-    if(num != 0)
-    {
-      CMTechECGMonitor_SendECGSignals(p, num*sizeof(int)); 
-    }
-  }
-}
-
-extern bool ECGFunc_ProcessEvent()
-{
-
-  
-  return TRUE;
-}
-
+// 处理采集到的一个数据
 static void ECGFunc_ProcessData(int data)
 {
   if(state == STATE_STOP) return;
   
   *p++ = (uint8)(data & 0x00FF);  
+  count++;
   *p++ = (uint8)((data >> 8) & 0x00FF);
-  num++;  
+  count++;  
 
-  if(num == PACKET_LEN)
+  if(count == PACKET_LEN)
   {
-    num = 0;
+    count = 0;
     p = (uint8*)(&packet[0]);    
-    CMTechECGMonitor_SendECGSignals(p, PACKET_LEN*sizeof(int));    
+    ECGMonitor_SendECGSignals(p, PACKET_LEN*sizeof(int));    
   }  
   /*
   if(i < 512)
@@ -98,3 +78,44 @@ static void ECGFunc_ProcessData(int data)
   
   //CommProtocol_sendCommand(COMM_SEND_DATA_RQ, sizeof(DATATYPE), (uint8 *)&d);       //直接发送    
 }
+
+
+
+
+/*****************************************************
+ * 公共函数
+ */
+
+extern void ECGFunc_Init()
+{
+  state = STATE_STOP;
+  
+  ADS1x9x_Init(ECGFunc_ProcessData);
+  
+}
+
+extern void ECGFunc_Start()
+{
+  if(state == STATE_STOP)
+  {
+    count = 0;
+    p = (uint8*)(&packet[0]);
+    ADS1x9x_StartConvert();
+    state = STATE_START;    
+  }
+}
+
+extern void ECGFunc_Stop()
+{
+  if(state == STATE_START)
+  {
+    ADS1x9x_StopConvert();
+    state = STATE_STOP; 
+    if(count != 0)
+    {
+      ECGMonitor_SendECGSignals(p, num*sizeof(int)); 
+    }
+  }
+}
+
+

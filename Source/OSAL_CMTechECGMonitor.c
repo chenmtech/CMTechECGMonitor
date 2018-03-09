@@ -100,7 +100,7 @@ const pTaskEventHandlerFn tasksArr[] =
   GAPRole_ProcessEvent,                                             // task 8
   GAPBondMgr_ProcessEvent,                                          // task 9
   GATTServApp_ProcessEvent,                                         // task 10
-  CMTechECGMonitor_ProcessEvent                                  // task 11
+  ECGMonitor_ProcessEvent                                           // task 11
 };
 
 const uint8 tasksCnt = sizeof( tasksArr ) / sizeof( tasksArr[0] );
@@ -160,7 +160,7 @@ void osalInitTasks( void )
   GATTServApp_Init( taskID++ );
 
   /* Application */
-  CMTechECGMonitor_Init( taskID );
+  ECGMonitor_Init( taskID );
 }
 
 /*********************************************************************

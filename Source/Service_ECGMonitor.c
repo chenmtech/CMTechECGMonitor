@@ -56,8 +56,7 @@ CONST uint8 ecgLeadTypeUUID[ATT_UUID_SIZE] =
   CM_UUID(ECGMONITOR_LEADTYPE_UUID)
 };
 
-// 每个ECG数据包的字节长度
-#define ECG_DATA_LEN 20
+
 
 
 

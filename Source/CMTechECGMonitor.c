@@ -623,7 +623,7 @@ extern void CMTechECGMonitor_SendECGSignals(uint8* pData, uint8 len)
   ECGSignalAtt.handle = 0;  
   
   //if(gapConnHandle != NULL)
-    CMTechECGMonitor_ECGSignalNotify( gapConnHandle, &ECGSignalAtt);
+    ECGMonitor_ECGSignalNotify( gapConnHandle, &ECGSignalAtt);
   
 }
 
