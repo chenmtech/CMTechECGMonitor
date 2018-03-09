@@ -320,16 +320,16 @@ void CMTechECGMonitor_Init( uint8 task_id )
   // Setup the CMTech ECGMonitor Characteristic Values  
   {
     int sampleRate = 250;
-    CMTechECGMonitor_SetParameter( ECGMONITOR_SAMPLERATE, sizeof ( int ), &sampleRate );
+    ECGMonitor_SetParameter( ECGMONITOR_SAMPLERATE, sizeof ( int ), &sampleRate );
     uint8 leadType = LEADTYPE_I;
-    CMTechECGMonitor_SetParameter( ECGMONITOR_LEAD_TYPE, sizeof ( uint8 ), &leadType );    
+    ECGMonitor_SetParameter( ECGMONITOR_LEADTYPE, sizeof ( uint8 ), &leadType );    
   }    
 
   // Initialize GATT attributes
   GGS_AddService( GATT_ALL_SERVICES );            // GAP
   GATTServApp_AddService( GATT_ALL_SERVICES );    // GATT attributes
   DevInfo_AddService();                           // Device Information Service
-  CMTechECGMonitor_AddService( GATT_ALL_SERVICES );  // Simple GATT Profile
+  ECGMonitor_AddService( GATT_ALL_SERVICES );  // Simple GATT Profile
 #if defined FEATURE_OAD
   VOID OADTarget_AddService();                    // OAD Profile
 #endif
@@ -351,7 +351,7 @@ void CMTechECGMonitor_Init( uint8 task_id )
 #endif // #if defined( CC2540_MINIDK )
 
   // Register callback with SimpleGATTprofile
-  VOID CMTechECGMonitor_Register( CMTechECGMonitorChangeCB );
+  VOID ECGMonitor_RegisterAppCBs( CMTechECGMonitorChangeCB );
 
   // Enable clock divide on halt
   // This reduces active current while radio is active and CC254x MCU

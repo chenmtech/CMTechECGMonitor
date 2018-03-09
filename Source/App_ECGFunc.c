@@ -5,7 +5,7 @@
 #include "osal.h"
 #include "cmtechECGMonitor.h"
 #include "App_ECGFunc.h"
-#include "Dev_ADS129x.h"
+#include "Dev_ADS1x9x.h"
 #include "DCand50HzFilter.h"
 
 #define STATE_STOP          0

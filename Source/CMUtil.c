@@ -2,6 +2,7 @@
 
 #include "CMUtil.h"
 
+// 从属性中提取16位UUID
 extern bStatus_t utilExtractUuid16(gattAttribute_t *pAttr, uint16 *pUuid)
 {
   bStatus_t status = SUCCESS;

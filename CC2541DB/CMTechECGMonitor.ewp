@@ -6370,6 +6370,18 @@
       <name>$PROJ_DIR$\..\Source\App_ECGFunc.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\Source\App_GAPConfig.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\App_GAPConfig.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\App_GATTConfig.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\App_GATTConfig.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\Source\CMTechECGMonitor.c</name>
     </file>
     <file>
@@ -6394,7 +6406,7 @@
       <name>$PROJ_DIR$\..\Source\Dev_ADS1x9x.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\Source\Dev_ADS1x9x.h</name>
+      <name>$PROJ_DIR$\..\Source\Dev_ADS1x9x.H</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\Source\hal_spi_ADS.c</name>
