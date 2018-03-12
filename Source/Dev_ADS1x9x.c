@@ -2,13 +2,16 @@
 #include "Dev_ADS1x9x.H"
 #include "hal_mcu.h"
 
-//#define ADS_IS_START()                  (ADS_START_PxOUT & ADS_START)
-
-
 
 /*
  * 局部常量
 */
+
+#define TYPE_ADS1191    0
+#define TYPE_ADS1192    1
+#define TYPE_ADS1291    2
+#define TYPE_ADS1292    3
+
 
 //当用内部测试信号时的寄存器值
 const static uint8 test1mVRegs[12] = {  
@@ -66,11 +69,15 @@ const static uint8 normalECGRegs[12] = {
   0x0C                      //
 };
 
+
 /*
  * 局部变量
 */
 // 重启后读出来的缺省寄存器值
 static uint8 defaultRegs[12];
+
+// 芯片类型
+static uint8 type;
 
 // 用于保存采样数据后的回调函数
 static ADS_DataCB_t ADS_DataCB;
@@ -151,6 +158,8 @@ extern void ADS1x9x_Init(ADS_DataCB_t pfnADS_DataCB_t)
   
   // 读缺省寄存器
   ADS1x9x_ReadAllRegister(defaultRegs); 
+  
+  type = (defaultRegs[0] & 0x03);
   
   // 设置正常采集寄存器值
   //ADS1x9x_SetRegsAsNormalECGSignal();
@@ -296,7 +305,23 @@ extern void ADS1x9x_WriteRegister(uint8 address, uint8 onebyte)
   ADS_CS_HIGH();
 }  
 
-
+#pragma vector = P0INT_VECTOR
+__interrupt void PORT0_ISR(void)
+{ 
+  halIntState_t intState;
+  HAL_ENTER_CRITICAL_SECTION( intState );  // Hold off interrupts.
+  
+  if(P0IFG & 0x02)  //P0_1中断
+  {
+    P0IFG &= ~(1<<1);   //clear P0_1 IFG 
+    P0IF = 0;   //clear P0 interrupt flag
+    
+    if(type == TYPE_ADS1291)
+      ADS1291_ReadOneSample();
+  }
+  
+  HAL_EXIT_CRITICAL_SECTION( intState );   // Re-enable interrupts.  
+}
 
 
 /******************************************************************************
@@ -326,23 +351,4 @@ static void ADS1291_ReadOneSample(void)
   
   if(ADS_DataCB != 0)
     ADS_DataCB((int)(value));
-}
-
-
-
-#pragma vector = P0INT_VECTOR
-__interrupt void PORT0_ISR(void)
-{ 
-  halIntState_t intState;
-  HAL_ENTER_CRITICAL_SECTION( intState );  // Hold off interrupts.
-  
-  if(P0IFG & 0x02)  //P0_1中断
-  {
-    P0IFG &= ~(1<<1);   //clear P0_1 IFG 
-    P0IF = 0;   //clear P0 interrupt flag
-    
-    ADS1291_ReadOneSample();
-  }
-  
-  HAL_EXIT_CRITICAL_SECTION( intState );   // Re-enable interrupts.  
 }

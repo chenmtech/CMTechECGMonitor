@@ -63,10 +63,12 @@
 #define DATA_LEN  6               //ADS1291每次接收数据长度为6个字节：状态3字节，通道1为3字节，通道2没有输出
 
 
-
-
 //采样到数据后的回调处理函数类型
 typedef void (*ADS_DataCB_t)(int oneData); 
+
+
+
+
 
 
 /****************************************************************
@@ -108,9 +110,10 @@ extern void ADS1x9x_WriteMultipleRegister(uint8 beginaddr, const uint8 * pRegs, 
 // 写所有寄存器
 extern void ADS1x9x_WriteAllRegister(const uint8 * pRegs);
 
-//使用内部测试信号
+//设置为采集内部测试信号
 extern void ADS1x9x_SetRegsAsTestSignal();
 
+// 设置为采集正常ECG信号
 extern void ADS1x9x_SetRegsAsNormalECGSignal();
 
 #endif
