@@ -12,13 +12,15 @@
 #define TYPE_ADS1291    2
 #define TYPE_ADS1292    3
 
+#define DATA_LEN  6               //ADS1291每次接收数据长度为6个字节：状态3字节，通道1为3字节，通道2没有输出
+
 
 //当用内部测试信号时的寄存器值
 const static uint8 test1mVRegs[12] = {  
   /*使用内部测试信号配置*/
   0x52,
   //CONFIG1
-  0x02,                     //contineus sample,500sps
+  0x01,                     //contineus sample,250sps
   //CONFIG2
   0xA3,                     //1Hz方波
   //LOFF
@@ -88,6 +90,8 @@ static uint8 status[3] = {0};
 //读取的通道数据字节
 static uint8 data[4];
 
+// 每次读取的数据长度
+static uint8 dataLength = DATA_LEN;
 
 
 /****************************************************************

@@ -20,10 +20,6 @@
 #define ECGMONITOR_1MV                   2   //1mV定标值
 #define ECGMONITOR_SAMPLERATE            3   //采样率
 #define ECGMONITOR_LEADTYPE              4   //导联类型
-  
-  
-// ECG导联数据Value在Attribute Table中的位置
-#define ECGMONITOR_DATA_POS              2
  
 
 // ECGMonitor服务和特征的UUID
@@ -46,12 +42,8 @@
 #define ECGMONITOR_SERVICE                 0x00000001
 
 // 每个ECG数据包的字节长度
-#define ECG_DATA_LEN 20
+#define ECG_PACKET_LEN 20
 
-
-// Callback events，这些事件是用来通知应用层要处理的事件
-//#define ECGMONITOR_SIGNAL_NOTI_ENABLED          1
-//#define ECGMONITOR_SIGNAL_NOTI_DISABLED         2
 
 
 /*********************************************************************

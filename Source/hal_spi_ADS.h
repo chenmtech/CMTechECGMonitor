@@ -7,7 +7,7 @@
 #define SPI_ADS_H
 
 #include <iocc2541.h>
-#include <hal_types.h>
+#include <bcomdef.h>
 
 /*
  * ³£Á¿»òºê

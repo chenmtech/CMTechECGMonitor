@@ -10,7 +10,7 @@
 #define DEV_ADS1X9X_H
 
 #include "hal_spi_ADS.h"
-#include <hal_types.h>
+#include <bcomdef.h>
 
 /*
  * 常数
@@ -57,10 +57,6 @@
 #define ADS1x9x_REG_RESP1               (0x0009u)
 #define ADS1x9x_REG_RESP2               (0x000Au)
 #define ADS1x9x_REG_GPIO                (0x000Bu)
-
-
-
-#define DATA_LEN  6               //ADS1291每次接收数据长度为6个字节：状态3字节，通道1为3字节，通道2没有输出
 
 
 //采样到数据后的回调处理函数类型

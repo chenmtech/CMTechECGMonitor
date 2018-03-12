@@ -22,9 +22,6 @@
 #define STATE_START_1MV         0x02
 
 
-//每个信号数据包的长度
-//#define PACKET_LEN          ECG_DATA_LEN
-
 /*****************************************************
  * 局部变量
  */
@@ -33,7 +30,7 @@
 static uint8 state = STATE_STOP;
 
 // 数据包
-static uint8 buf[ECG_DATA_LEN] = {0};
+static uint8 buf[ECG_PACKET_LEN] = {0};
 
 //static uint8 * p = 0;
 
@@ -56,10 +53,10 @@ static void ECGFunc_ProcessData(int data)
   buf[count++] = (uint8)(data & 0x00FF);  
   buf[count++] = (uint8)((data >> 8) & 0x00FF);
 
-  if(count == ECG_DATA_LEN)
+  if(count == ECG_PACKET_LEN)
   {
     count = 0;
-    ECGMonitor_SetParameter( ECGMONITOR_DATA, ECG_DATA_LEN, buf );  
+    ECGMonitor_SetParameter( ECGMONITOR_DATA, ECG_PACKET_LEN, buf );  
   }  
   /*
   if(i < 512)

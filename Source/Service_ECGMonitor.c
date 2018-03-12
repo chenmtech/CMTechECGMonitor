@@ -14,6 +14,7 @@
 #include "cmutil.h"
 
 #include "Service_ECGMonitor.h"
+#include "CMTechECGMonitor.h"
 
 
 /*********************************************************************
@@ -70,17 +71,17 @@ CONST uint8 ecgLeadTypeUUID[ATT_UUID_SIZE] =
  * Profile Attributes - variables
  */
 
-// ECG Monitor Service attribute，Service的Attribute类型
+// ECGMonitor的服务Attribute类型
 static CONST gattAttrType_t ecgService = { ATT_UUID_SIZE, ecgServUUID };
 
 // ECG数据特征
-static uint8 ecgDataProps = GATT_PROP_NOTIFY;
-static uint8 ecgData[ECG_DATA_LEN] = {0};
+static uint8 ecgDataProps = GATT_PROP_READ | GATT_PROP_NOTIFY;
+static uint8 ecgData[ECG_PACKET_LEN] = {0};
 static gattCharCfg_t ecgDataConfig[GATT_MAX_NUM_CONN];  //每个连接上对应有一个配置值
 
 // 测量控制点特征
 static uint8 ecgCtrlProps = GATT_PROP_READ | GATT_PROP_WRITE;
-static uint8 ecgCtrl  = 0;
+static uint8 ecgCtrl  = ECGMONITOR_CTRL_STOP;
 
 //1mV信号特征
 static uint8 ecg1mVProps = GATT_PROP_READ;
@@ -88,7 +89,7 @@ static int ecg1mV = 0;
 
 // 采样率特征
 static uint8 ecgSampleRateProps = GATT_PROP_READ;
-static int ecgSampleRate = 250;      //Hz
+static int ecgSampleRate = 250;      //采样率250Hz
 
 // Lead Type Characteristic
 static uint8 ecgLeadTypeProps = GATT_PROP_READ;
@@ -205,7 +206,7 @@ static gattAttribute_t ecgMonitorServAttrTbl[] =
 
 };
 
-//用来保存应用层的回调结构体指针
+//用来保存应用层的回调结构体实例指针
 static ecgServiceCBs_t * ecgService_AppCBs = NULL;
 
 
@@ -263,6 +264,12 @@ static uint8 ecgMonitor_ReadAttrCB( uint16 connHandle, gattAttribute_t *pAttr,
   {
     // No need for "GATT_SERVICE_UUID" or "GATT_CLIENT_CHAR_CFG_UUID" cases;
     // gattserverapp handles those reads
+    case ECGMONITOR_DATA_UUID:
+      // 读ECG数据包值
+      *pLen = ECG_PACKET_LEN;
+      VOID osal_memcpy( pValue, pAttr->pValue, ECG_PACKET_LEN );
+      break;
+      
     case ECGMONITOR_CTRL_UUID:
     case ECGMONITOR_LEADTYPE_UUID:
       *pLen = 1;
@@ -405,7 +412,7 @@ extern bStatus_t ECGMonitor_AddService( uint32 services )
   return ( status );
 }
 
-//登记应用层回调结构体实例
+//登记应用层回调结构体实例指针
 extern bStatus_t ECGMonitor_RegisterAppCBs( ecgServiceCBs_t * appCallbacks )
 {
   if ( appCallbacks )
@@ -429,9 +436,9 @@ extern bStatus_t ECGMonitor_SetParameter( uint8 param, uint8 len, void *value )
   {
     // 设置ECG数据，触发Notification
     case ECGMONITOR_DATA:
-      if ( len == ECG_DATA_LEN )
+      if ( len == ECG_PACKET_LEN )
       {
-        VOID osal_memcpy( ecgData, value, ECG_DATA_LEN );
+        VOID osal_memcpy( ecgData, value, ECG_PACKET_LEN );
         // See if Notification has been enabled
         GATTServApp_ProcessCharCfg( ecgDataConfig, ecgData, FALSE,
                                    ecgMonitorServAttrTbl, GATT_NUM_ATTRS( ecgMonitorServAttrTbl ),
@@ -509,7 +516,7 @@ extern bStatus_t ECGMonitor_GetParameter( uint8 param, void *value )
   {
     // 获取ECG数据
     case ECGMONITOR_DATA:
-      VOID osal_memcpy( value, ecgData, ECG_DATA_LEN );
+      VOID osal_memcpy( value, ecgData, ECG_PACKET_LEN );
       break;
 
     // 获取测量控制点  

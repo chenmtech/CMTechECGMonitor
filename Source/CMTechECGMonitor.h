@@ -14,7 +14,6 @@
 
 // ECG Monitor Task Events
 #define ECGMONITOR_START_DEVICE_EVT                   0x0001     // 启动设备事件
-//#define ECGMONITOR_START_PERIODIC_EVT                 0x0002     // 周期采集启动事件
 
 
 // 测量控制标记值
