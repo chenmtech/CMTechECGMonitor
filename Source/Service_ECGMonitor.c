@@ -125,7 +125,7 @@ static gattAttribute_t ecgMonitorServAttrTbl[] =
         { ATT_UUID_SIZE, ecgDataUUID },
         0, 
         0, 
-        (uint8*)ecgData 
+        (uint8 *)ecgData 
       },
   
       // Characteristic Configuration 
@@ -438,7 +438,14 @@ extern bStatus_t ECGMonitor_SetParameter( uint8 param, uint8 len, void *value )
     case ECGMONITOR_DATA:
       if ( len == ECG_PACKET_LEN )
       {
-        VOID osal_memcpy( ecgData, value, ECG_PACKET_LEN );
+        // 由于ecgData是共享到外部数据处理App_ECGFunc模块，所以value必然等于ecgData
+        // 这样免去了拷贝数据
+        //VOID osal_memcpy( ecgData, value, ECG_PACKET_LEN );
+        if(value != ecgData) {
+          ret = bleInvalidRange;
+          break;
+        }
+        
         // See if Notification has been enabled
         GATTServApp_ProcessCharCfg( ecgDataConfig, ecgData, FALSE,
                                    ecgMonitorServAttrTbl, GATT_NUM_ATTRS( ecgMonitorServAttrTbl ),
@@ -545,6 +552,12 @@ extern bStatus_t ECGMonitor_GetParameter( uint8 param, void *value )
   }
   
   return ( ret );
+}
+
+// 返回ecgData给外部数据处理模块，免去重复分配数据空间
+extern uint8 * ECGMonitor_GetECGDataPointer()
+{
+  return ecgData;
 }
 
 //发送一个ECG信号值的Notification

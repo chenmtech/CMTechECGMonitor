@@ -30,12 +30,12 @@
 static uint8 state = STATE_STOP;
 
 // 数据包
-static uint8 buf[ECG_PACKET_LEN] = {0};
+static uint8 *pBuf; //[ECG_PACKET_LEN] = {0};
 
 //static uint8 * p = 0;
 
 // 当前数据包中已经保存的数据字节数
-static uint8 count = 0;
+static uint8 byteCnt = 0;
 
 
 
@@ -50,14 +50,16 @@ static void ECGFunc_ProcessDataCB(int data)
 {
   if(state == STATE_STOP) return;
   
-  buf[count++] = (uint8)(data & 0x00FF);  
-  buf[count++] = (uint8)((data >> 8) & 0x00FF);
+  *pBuf++ = (uint8)(data & 0x00FF);  
+  *pBuf++ = (uint8)((data >> 8) & 0x00FF);
+  byteCnt += 2;
 
   // 达到数据包长度
-  if(count == ECG_PACKET_LEN)
+  if(byteCnt == ECG_PACKET_LEN)
   {
-    count = 0;
-    ECGMonitor_SetParameter( ECGMONITOR_DATA, ECG_PACKET_LEN, buf );  
+    byteCnt = 0;
+    pBuf = ECGMonitor_GetECGDataPointer();
+    ECGMonitor_SetParameter( ECGMONITOR_DATA, ECG_PACKET_LEN, pBuf );  
   }  
   /*
   if(i < 512)
@@ -88,6 +90,10 @@ extern void ECGFunc_Init()
   // 设置数据处理回调函数
   ADS1x9x_Init(ECGFunc_ProcessDataCB);
   
+  pBuf = ECGMonitor_GetECGDataPointer();
+  
+  byteCnt = 0;
+  
 }
 
 extern void ECGFunc_StartEcg()
@@ -96,10 +102,13 @@ extern void ECGFunc_StartEcg()
   
   if(state == STATE_START_1MV) {
     ADS1x9x_StopConvert();
-    ADS1x9x_SetRegsAsNormalECGSignal();
   }
   
-  count = 0;
+  ADS1x9x_SetRegsAsNormalECGSignal();
+  
+  byteCnt = 0;
+  pBuf = ECGMonitor_GetECGDataPointer();
+  
   ADS1x9x_StartConvert();
   state = STATE_START_ECG;
 }
@@ -110,10 +119,13 @@ extern void ECGFunc_Start1mV()
   
   if(state == STATE_START_ECG) {
     ADS1x9x_StopConvert();
-    ADS1x9x_SetRegsAsTestSignal();
   }
+
+  ADS1x9x_SetRegsAsTestSignal();  
   
-  count = 0;
+  byteCnt = 0;
+  pBuf = ECGMonitor_GetECGDataPointer();
+  
   ADS1x9x_StartConvert();
   state = STATE_START_1MV;
 }

@@ -80,6 +80,9 @@ extern bStatus_t ECGMonitor_SetParameter( uint8 param, uint8 len, void *value );
 //让应用层获取指定的特征参数
 extern bStatus_t ECGMonitor_GetParameter( uint8 param, void *value );
 
+// 返回ecgData给外部数据处理模块，免去重复分配数据空间
+extern uint8 * ECGMonitor_GetECGDataPointer();
+
 //发送一个ECG信号值的Notification
 //extern bStatus_t CMTechECGMonitor_ECGSignalNotify( uint16 connHandle, attHandleValueNoti_t *pNoti );
 

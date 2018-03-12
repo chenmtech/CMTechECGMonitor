@@ -20,7 +20,7 @@ const static uint8 test1mVRegs[12] = {
   /*使用内部测试信号配置*/
   0x52,
   //CONFIG1
-  0x01,                     //contineus sample,250sps
+  0x00,                     //contineus sample,250sps
   //CONFIG2
   0xA3,                     //1Hz方波
   //LOFF
@@ -48,7 +48,7 @@ const static uint8 normalECGRegs[12] = {
   //DEVID
   0x52,
   //CONFIG1
-  0x01,                     //continuous sample,250sps
+  0x00,                     //continuous sample,250sps
   //CONFIG2
   0xA0,                     //
   //LOFF
@@ -166,12 +166,15 @@ extern void ADS1x9x_Init(ADS_DataCB_t pfnADS_DataCB_t)
   type = (defaultRegs[0] & 0x03);
   
   // 设置正常采集寄存器值
-  //ADS1x9x_SetRegsAsNormalECGSignal();
+  ADS1x9x_SetRegsAsNormalECGSignal();
   // 设置采集内部测试信号时的寄存器值
-  ADS1x9x_SetRegsAsTestSignal();
+  //ADS1x9x_SetRegsAsTestSignal();
   
   //设置采样数据后的回调函数
   ADS_DataCB = pfnADS_DataCB_t;
+  
+  // 进入待机状态
+  ADS1x9x_StandBy();
 }
 
 // 唤醒
