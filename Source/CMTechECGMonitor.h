@@ -1,7 +1,7 @@
 /**************************************************************************************************
- * CMTechThermometer.h
+ * CMTechECGMonitor.h：ECG监视器主程序头文件
  *
-**************************************************************************************************/
+ **************************************************************************************************/
 
 #ifndef CMTECHECGMONITOR_H
 #define CMTECHECGMONITOR_H
@@ -12,8 +12,8 @@
  */
 
 
-// ECG Monitor Task Events
-#define ECGMONITOR_START_DEVICE_EVT                   0x0001     // 启动设备事件
+// ECGMonitor任务事件
+#define ECGMONITOR_START_DEVICE_EVT             0x0001     // 启动设备事件
 
 
 // 测量控制标记值

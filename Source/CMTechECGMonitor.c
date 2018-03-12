@@ -55,7 +55,6 @@
 
 #include "hci.h"
 
-#include "App_ECGFunc.h"
 
 #include "gapgattserver.h"
 #include "gattservapp.h"
@@ -70,16 +69,21 @@
 
 #include "gapbondmgr.h"
 
-#include "App_GAPConfig.h"
-
-#include "App_GATTConfig.h"
-
-#include "CMTechECGMonitor.h"
-
 #if defined FEATURE_OAD
   #include "oad.h"
   #include "oad_target.h"
 #endif
+
+
+#include "App_GAPConfig.h"
+
+#include "App_GATTConfig.h"
+
+#include "App_ECGFunc.h"
+
+#include "Dev_ADS1x9x.h"
+
+#include "CMTechECGMonitor.h"
 
 
 /*********************************************************************
@@ -90,14 +94,12 @@
 #define INVALID_CONNHANDLE                    0xFFFF
 
 
-
-
 /*********************************************************************
  * 局部变量
  */
 
 // 任务ID
-static uint8 ecgMonitor_TaskID;   // Task ID for internal task/event processing
+static uint8 ecgMonitor_TaskID;  
 
 // GAP状态
 static gaprole_States_t gapProfileState = GAPROLE_INIT;
@@ -167,7 +169,7 @@ extern void ECGMonitor_Init( uint8 task_id )
   // 初始化立刻广播
   GAPConfig_EnableAdv(TRUE);
 
-  //配置连接参数
+  //配置连接参数，连接间隔20ms
   GAPConfig_SetConnParam(20, 20, 5, 1000, 1);
 
   //配置GGS，设置设备名
@@ -254,8 +256,6 @@ extern uint16 ECGMonitor_ProcessEvent( uint8 task_id, uint16 events )
 
     // Start Bond Manager
     VOID GAPBondMgr_Register( &ecgMonitor_BondMgrCBs );
-    
-    //ECGFunc_Init(CMTechECGMonitor_TaskID);    
 
     return ( events ^ ECGMONITOR_START_DEVICE_EVT );
   }
@@ -339,7 +339,9 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
           HalLcdWriteString( "Disconnected",  HAL_LCD_LINE_3 );
         #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
           
+        // 连接断开后停止采样  
         ECGFunc_Stop();
+        ADS1x9x_Reset();
       }
       break;
 
