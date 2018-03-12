@@ -43,16 +43,17 @@ static uint8 count = 0;
 /*****************************************************
  * 局部函数
  */
-static void ECGFunc_ProcessData(int data);
+static void ECGFunc_ProcessDataCB(int data);
 
 // 处理采集到的一个数据
-static void ECGFunc_ProcessData(int data)
+static void ECGFunc_ProcessDataCB(int data)
 {
   if(state == STATE_STOP) return;
   
   buf[count++] = (uint8)(data & 0x00FF);  
   buf[count++] = (uint8)((data >> 8) & 0x00FF);
 
+  // 达到数据包长度
   if(count == ECG_PACKET_LEN)
   {
     count = 0;
@@ -84,7 +85,8 @@ extern void ECGFunc_Init()
 {
   state = STATE_STOP;
   
-  ADS1x9x_Init(ECGFunc_ProcessData);
+  // 设置数据处理回调函数
+  ADS1x9x_Init(ECGFunc_ProcessDataCB);
   
 }
 
