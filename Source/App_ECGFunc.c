@@ -29,10 +29,8 @@
 // 当前状态
 static uint8 state = STATE_STOP;
 
-// 数据包
-static uint8 *pBuf; //[ECG_PACKET_LEN] = {0};
-
-//static uint8 * p = 0;
+// 数据包，指向Service_ECGMonitor中的ecgData
+static uint8 *pBuf;
 
 // 当前数据包中已经保存的数据字节数
 static uint8 byteCnt = 0;
@@ -76,7 +74,21 @@ static void ECGFunc_ProcessDataCB(int data)
   //CommProtocol_sendCommand(COMM_SEND_DATA_RQ, sizeof(DATATYPE), (uint8 *)&d);       //直接发送    
 }
 
-
+//延时us
+static void Delay_us(uint16 us)
+{
+  while(us--)
+  {
+    /* 32 NOPs == 1 usecs */
+    asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
+    asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
+    asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
+    asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
+    asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
+    asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
+    asm("nop"); asm("nop");
+  }
+}
 
 
 /*****************************************************
@@ -87,9 +99,10 @@ extern void ECGFunc_Init()
 {
   state = STATE_STOP;
   
-  // 设置数据处理回调函数
+  // 初始化ADS1x9x，设置数据处理回调函数
   ADS1x9x_Init(ECGFunc_ProcessDataCB);
   
+  // 获取ECG DATA数据空间指针
   pBuf = ECGMonitor_GetECGDataPointer();
   
   byteCnt = 0;
@@ -98,14 +111,23 @@ extern void ECGFunc_Init()
 
 extern void ECGFunc_StartEcg()
 {
-  if(state == STATE_START_ECG) return;
-  
-  if(state == STATE_START_1MV) {
+  switch(state) {
+  case STATE_START_ECG:
+    return;
+  case STATE_START_1MV:
     ADS1x9x_StopConvert();
+    break;
+  case STATE_STOP:
+    ADS1x9x_WakeUp();
+    break;
+  default:
+    return;
   }
   
-  ADS1x9x_SetRegsAsNormalECGSignal();
+  // 这里一定要延时，否则容易死机
+  Delay_us(100);
   
+  ADS1x9x_SetRegsAsNormalECGSignal();
   byteCnt = 0;
   pBuf = ECGMonitor_GetECGDataPointer();
   
@@ -115,11 +137,21 @@ extern void ECGFunc_StartEcg()
 
 extern void ECGFunc_Start1mV()
 {
-  if(state == STATE_START_1MV) return;
-  
-  if(state == STATE_START_ECG) {
+  switch(state) {
+  case STATE_START_1MV:
+    return;
+  case STATE_START_ECG:
     ADS1x9x_StopConvert();
+    break;
+  case STATE_STOP:
+    ADS1x9x_WakeUp();
+    break;
+  default:
+    return;
   }
+  
+  // 这里一定要延时，否则容易死机
+  Delay_us(100);
 
   ADS1x9x_SetRegsAsTestSignal();  
   
@@ -136,6 +168,7 @@ extern void ECGFunc_Stop()
   {
     ADS1x9x_StopConvert();
     state = STATE_STOP; 
+    ADS1x9x_StandBy();
   }
 }
 
