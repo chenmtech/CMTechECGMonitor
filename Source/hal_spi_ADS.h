@@ -1,11 +1,13 @@
 /*
-* hal_spi_ADS.h : CC2541上支持ADS129X芯片的SPI接口程序头文件
-*/
+ * hal_spi_ADS.h : CC2541上支持ADS129X芯片的SPI接口程序头文件
+ * Written by Chenm
+ */
 
 #ifndef SPI_ADS_H
 #define SPI_ADS_H
 
 #include <iocc2541.h>
+#include <hal_types.h>
 
 /*
  * 常量或宏
@@ -53,13 +55,18 @@
 extern void SPI_ADS_Init();
 
 //发送单个字节
-extern unsigned char SPI_ADS_SendByte(const unsigned char data);
+extern uint8 SPI_ADS_SendByte(const uint8 data);
 
-//读取多个字节
-extern void SPI_ADS_ReadFrame(unsigned char* pBuffer, unsigned int size);
+// 读单个字节，只是发送一个ADS_DUMMY_CHAR
+extern uint8 SPI_ADS_ReadByte();
 
 //发送多个字节
-extern void SPI_ADS_SendFrame(const unsigned char* pBuffer, unsigned int size);
+extern void SPI_ADS_SendFrame(const uint8* pBuffer, uint16 size);
+
+//读取多个字节
+extern void SPI_ADS_ReadFrame(uint8* pBuffer, uint16 size);
+
+
 
 
 

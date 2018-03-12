@@ -336,10 +336,10 @@ __interrupt void PORT0_ISR(void)
   halIntState_t intState;
   HAL_ENTER_CRITICAL_SECTION( intState );  // Hold off interrupts.
   
-  if(P0IFG & 0x02)  //P0.1ÖÐ¶Ï
+  if(P0IFG & 0x02)  //P0_1ÖÐ¶Ï
   {
-    P0IFG &= ~(1<<1);   //clear P0IFG 1 
-    P0IF = 0;   //clear P0 IFG
+    P0IFG &= ~(1<<1);   //clear P0_1 IFG 
+    P0IF = 0;   //clear P0 interrupt flag
     
     ADS1291_ReadOneSample();
   }
