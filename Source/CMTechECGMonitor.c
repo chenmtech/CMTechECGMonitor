@@ -169,8 +169,8 @@ extern void ECGMonitor_Init( uint8 task_id )
   // 初始化立刻广播
   GAPConfig_EnableAdv(TRUE);
 
-  //配置连接参数，连接间隔20ms
-  GAPConfig_SetConnParam(20, 20, 5, 1000, 1);
+  //配置连接参数，连接间隔10ms
+  GAPConfig_SetConnParam(10, 10, 5, 1000, 1);
 
   //配置GGS，设置设备名
   GAPConfig_SetGGSParam(attDeviceName);
@@ -341,7 +341,7 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
           
         // 连接断开后停止采样  
         ECGFunc_Stop();
-        ADS1x9x_Reset();
+        //ADS1x9x_Reset();
       }
       break;
 

@@ -20,7 +20,7 @@ const static uint8 test1mVRegs[12] = {
   /*使用内部测试信号配置*/
   0x52,
   //CONFIG1
-  0x00,                     //contineus sample,250sps
+  0x01,                     //contineus sample,250sps
   //CONFIG2
   0xA3,                     //1Hz方波
   //LOFF
@@ -48,7 +48,7 @@ const static uint8 normalECGRegs[12] = {
   //DEVID
   0x52,
   //CONFIG1
-  0x00,                     //continuous sample,250sps
+  0x01,                     //continuous sample,250sps
   //CONFIG2
   0xA0,                     //
   //LOFF
@@ -205,12 +205,14 @@ extern void ADS1x9x_StartConvert(void)
   ADS_CS_LOW();  
   SPI_ADS_SendByte(SDATAC);
   SPI_ADS_SendByte(RDATAC);  
-  Delay_us(10);
-  ADS_CS_HIGH();   
+  Delay_us(100);
+  ADS_CS_HIGH();  
+  
+  Delay_us(100);   
   
   //START 高电平
   ADS_START_HIGH();    
-  Delay_us(16000); 
+  Delay_us(160); 
 }
 
 // 停止采样
@@ -218,12 +220,14 @@ extern void ADS1x9x_StopConvert(void)
 {
   ADS_CS_LOW();  
   SPI_ADS_SendByte(SDATAC);
-  Delay_us(10);
-  ADS_CS_HIGH();   
+  Delay_us(100);
+  ADS_CS_HIGH(); 
+
+  Delay_us(100);  
   
   //START 低电平
   ADS_START_LOW();
-  Delay_us(16000); 
+  Delay_us(160); 
 }
 
 // 读所有12个寄存器值
