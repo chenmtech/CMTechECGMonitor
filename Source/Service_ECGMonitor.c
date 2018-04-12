@@ -89,7 +89,7 @@ static int ecg1mV = 0;
 
 // 采样率特征
 static uint8 ecgSampleRateProps = GATT_PROP_READ;
-static int ecgSampleRate = 250;      //采样率250Hz
+static int ecgSampleRate = 125;      //采样率125Hz
 
 // Lead Type Characteristic
 static uint8 ecgLeadTypeProps = GATT_PROP_READ;
