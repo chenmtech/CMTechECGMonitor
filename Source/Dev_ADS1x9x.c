@@ -20,13 +20,13 @@ const static uint8 test1mVRegs[12] = {
   /*使用内部测试信号配置*/
   0x52,
   //CONFIG1
-  0x01,                     //contineus sample,250sps
+  0x00,                     //contineus sample,125sps
   //CONFIG2
-  0xA3,                     //1Hz方波
+  0xA3,                     //0xA3: 1mV 方波测试信号, 0xA2: 1mV DC测试信号
   //LOFF
   0x10,                     //
   //CH1SET 
-  0x15,                     //PGA=1, 测试信号
+  0x65,                     //PGA=12, 测试信号
   //CH2SET
   0x80,                     //关闭CH2
   //RLD_SENS (default)      
@@ -48,13 +48,13 @@ const static uint8 normalECGRegs[12] = {
   //DEVID
   0x52,
   //CONFIG1
-  0x01,                     //continuous sample,250sps
+  0x00,                     //continuous sample,125sps
   //CONFIG2
   0xA0,                     //
   //LOFF
   0x10,                     //
   //CH1SET 
-  0x60,                     //PGA=12
+  0x60,                     //PGA=12，电极输入
   //CH2SET
   0x80,                     //关闭CH2
   //RLD_SENS     
@@ -166,9 +166,9 @@ extern void ADS1x9x_Init(ADS_DataCB_t pfnADS_DataCB_t)
   type = (defaultRegs[0] & 0x03);
   
   // 设置正常采集寄存器值
-  ADS1x9x_SetRegsAsNormalECGSignal();
+  //ADS1x9x_SetRegsAsNormalECGSignal();
   // 设置采集内部测试信号时的寄存器值
-  //ADS1x9x_SetRegsAsTestSignal();
+  ADS1x9x_SetRegsAsTestSignal();
   
   //设置采样数据后的回调函数
   ADS_DataCB = pfnADS_DataCB_t;

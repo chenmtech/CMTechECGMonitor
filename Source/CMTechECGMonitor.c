@@ -401,6 +401,7 @@ static void ecgMonitorServiceCB( uint8 paramID )
       else if ( newValue == ECGMONITOR_CTRL_START_ECG) 
       {
         ECGFunc_StartEcg();
+        //ECGFunc_Start1mV();
       }
       // 开始采集1mV
       else if ( newValue == ECGMONITOR_CTRL_START_1MV) 
