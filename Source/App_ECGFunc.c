@@ -66,7 +66,7 @@ static void ECGFunc_ProcessDataCB(int data)
   {
     i = 0;
   }
-  */
+  */ 
   //DATATYPE d = (DATATYPE)FPFIRLPF1_Filter( DCAND50HZ_IntegerFilter(data) );
 
   //d = d >> 2;   //这里的右移主要是适应手机端的屏幕显示尺度，实际上可以不用右移，在手机端调整尺度
