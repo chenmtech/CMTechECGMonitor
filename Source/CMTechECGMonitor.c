@@ -330,6 +330,7 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
         #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
           
         //GAPRole_GetParameter( GAPROLE_CONNHANDLE, &gapConnHandle );  
+        ECGFunc_Init();   
       }
       break;
 
@@ -400,12 +401,14 @@ static void ecgMonitorServiceCB( uint8 paramID )
       // 开始采集ECG
       else if ( newValue == ECGMONITOR_CTRL_START_ECG) 
       {
+        ADS1x9x_Reset();
         ECGFunc_StartEcg();
         //ECGFunc_Start1mV();
       }
       // 开始采集1mV
       else if ( newValue == ECGMONITOR_CTRL_START_1MV) 
       {
+        ADS1x9x_Reset();
         ECGFunc_Start1mV();
       }
       
