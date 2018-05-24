@@ -160,6 +160,8 @@ extern void ADS1x9x_Init(ADS_DataCB_t pfnADS_DataCB_t)
   // 初始化SPI模块
   SPI_ADS_Init();  
   
+  ADS1x9x_Reset();
+  
   // 读缺省寄存器
   ADS1x9x_ReadAllRegister(defaultRegs); 
   
