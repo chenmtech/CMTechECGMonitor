@@ -164,7 +164,7 @@ extern void ECGMonitor_Init( uint8 task_id )
 
   // GAP 配置
   //配置广播参数
-  GAPConfig_SetAdvParam(800, ECGMONITOR_SERV_UUID);
+  GAPConfig_SetAdvParam(2000, ECGMONITOR_SERV_UUID);
   
   // 初始化立刻广播
   GAPConfig_EnableAdv(TRUE);
