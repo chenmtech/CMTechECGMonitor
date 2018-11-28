@@ -16,6 +16,10 @@
  * 常数
 */
 
+// 采样频率
+#define SR_SPS          250
+
+
 //SPI接口命令
 #define WAKEUP		0x02		//Wake-up from standby mode
 #define STANDBY	        0x04	        //Enter standby mode

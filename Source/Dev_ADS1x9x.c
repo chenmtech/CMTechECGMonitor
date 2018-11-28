@@ -7,12 +7,14 @@
  * 局部常量
 */
 
+// ADS芯片类型
 #define TYPE_ADS1191    0
 #define TYPE_ADS1192    1
 #define TYPE_ADS1291    2
 #define TYPE_ADS1292    3
 
-#define DATA_LEN  6               //ADS1291每次接收数据长度为6个字节：状态3字节，通道1为3字节，通道2没有输出
+// ADS1291每次接收数据长度为6个字节：状态3字节，通道1为3字节，通道2没有输出
+#define DATA_LEN  6               
 
 
 //当用内部测试信号时的寄存器值
@@ -20,7 +22,11 @@ const static uint8 test1mVRegs[12] = {
   /*使用内部测试信号配置*/
   0x52,
   //CONFIG1
+#if (SR_SPS == 125)
   0x00,                     //contineus sample,125sps
+#elif (SR_SPS == 250)
+  0x01,                     //contineus sample,250sps
+#endif
   //CONFIG2
   0xA3,                     //0xA3: 1mV 方波测试信号, 0xA2: 1mV DC测试信号
   //LOFF
@@ -47,8 +53,11 @@ const static uint8 test1mVRegs[12] = {
 const static uint8 normalECGRegs[12] = {  
   //DEVID
   0x52,
-  //CONFIG1
-  0x00,                     //continuous sample,125sps
+#if (SR_SPS == 125)
+  0x00,                     //contineus sample,125sps
+#elif (SR_SPS == 250)
+  0x01,                     //contineus sample,250sps
+#endif
   //CONFIG2
   0xA0,                     //
   //LOFF
@@ -339,7 +348,7 @@ __interrupt void PORT0_ISR(void)
 
 /******************************************************************************
  * 读一个样本
- * ADS1291是高精度（24bit），单通道芯片
+ * ADS1291是高精度（24bit）单通道芯片
 ******************************************************************************/
 static void ADS1291_ReadOneSample(void)
 {  
@@ -358,7 +367,7 @@ static void ADS1291_ReadOneSample(void)
   long value = *((long *)data);
   
   // 带符号右移
-  value = (value >> 12);       //本来右移8位就是实际的数值，但是可能会有一些低位的噪声位，所以需要选择一个合适的右移位数
+  value = (value >> 10);       //本来右移8位就是实际的数值，但是可能会有一些低位的噪声位，所以需要选择一个合适的右移位数
   
   //tmp = (tmp > 32767) ? 32767 : (tmp < -32767) ? -32767 : tmp;
   

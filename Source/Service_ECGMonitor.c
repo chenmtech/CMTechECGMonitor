@@ -13,6 +13,7 @@
 #include "gapbondmgr.h"
 #include "cmutil.h"
 
+#include "dev_ads1x9x.h"
 #include "Service_ECGMonitor.h"
 #include "CMTechECGMonitor.h"
 
@@ -89,7 +90,7 @@ static int ecg1mV = 0;
 
 // 采样率特征
 static uint8 ecgSampleRateProps = GATT_PROP_READ;
-static int ecgSampleRate = 125;      //采样率125Hz
+static int ecgSampleRate = SR_SPS;      //采样率
 
 // Lead Type Characteristic
 static uint8 ecgLeadTypeProps = GATT_PROP_READ;
