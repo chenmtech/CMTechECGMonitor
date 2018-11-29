@@ -125,8 +125,6 @@ static void ecgMonitorServiceCB( uint8 paramID );
 // 初始化IO管脚
 static void ecgMonitorInitIOPin();
 
-static void Delay_us(uint16 us);
-
 
 /*********************************************************************
  * PROFILE CALLBACKS
@@ -332,7 +330,7 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
         #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
           
         //GAPRole_GetParameter( GAPROLE_CONNHANDLE, &gapConnHandle );  
-        //ECGFunc_Init();   
+        ECGFunc_Init();   
       }
       break;
 
@@ -344,9 +342,6 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
           
         // 连接断开后停止采样  
         ECGFunc_Stop();
-        Delay_us(1000);
-        ECGFunc_Init();   
-        Delay_us(1000);
         //ADS1x9x_Reset();
       }
       break;
@@ -421,22 +416,6 @@ static void ecgMonitorServiceCB( uint8 paramID )
     default:
       // Should not get here
       break;
-  }
-}
-
-//延时us
-static void Delay_us(uint16 us)
-{
-  while(us--)
-  {
-    /* 32 NOPs == 1 usecs */
-    asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
-    asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
-    asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
-    asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
-    asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
-    asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
-    asm("nop"); asm("nop");
   }
 }
 

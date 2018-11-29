@@ -167,10 +167,8 @@ extern void ECGFunc_Stop()
   if(state != STATE_STOP)
   {
     ADS1x9x_StopConvert();
-    Delay_us(1000);
     state = STATE_STOP; 
     ADS1x9x_StandBy();
-    Delay_us(1000);
   }
 }
 
