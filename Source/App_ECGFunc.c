@@ -107,6 +107,8 @@ extern void ECGFunc_Init()
   
   byteCnt = 0;
   
+  Delay_us(1000);
+  
 }
 
 extern void ECGFunc_StartEcg()
@@ -125,7 +127,7 @@ extern void ECGFunc_StartEcg()
   }
   
   // 这里一定要延时，否则容易死机
-  Delay_us(100);
+  Delay_us(1000);
   
   ADS1x9x_SetRegsAsNormalECGSignal();
   byteCnt = 0;
@@ -133,6 +135,8 @@ extern void ECGFunc_StartEcg()
   
   ADS1x9x_StartConvert();
   state = STATE_START_ECG;
+  
+  Delay_us(1000);
 }
 
 extern void ECGFunc_Start1mV()
@@ -151,7 +155,7 @@ extern void ECGFunc_Start1mV()
   }
   
   // 这里一定要延时，否则容易死机
-  Delay_us(100);
+  Delay_us(1000);
 
   ADS1x9x_SetRegsAsTestSignal();  
   
@@ -160,6 +164,8 @@ extern void ECGFunc_Start1mV()
   
   ADS1x9x_StartConvert();
   state = STATE_START_1MV;
+  
+  Delay_us(1000);
 }
 
 extern void ECGFunc_Stop()
@@ -170,6 +176,8 @@ extern void ECGFunc_Stop()
     state = STATE_STOP; 
     ADS1x9x_StandBy();
   }
+  
+  Delay_us(1000);
 }
 
 
