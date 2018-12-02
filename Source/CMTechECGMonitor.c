@@ -355,7 +355,7 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
         #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
         
         // 连接断开后停止采样  
-        ECGFunc_Stop();
+        //ECGFunc_Stop();
         //ADS1x9x_Reset();  
       }
       break;
@@ -366,10 +366,10 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
           HalLcdWriteString( "Error",  HAL_LCD_LINE_3 );
         #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
           
-        GAPConfig_TerminateConn();
+        //GAPConfig_TerminateConn();
           
         // 连接断开后停止采样  
-        ECGFunc_Stop();
+        //ECGFunc_Stop();
         //ADS1x9x_Reset();  
       }
       break;
@@ -380,10 +380,10 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
           HalLcdWriteString( "",  HAL_LCD_LINE_3 );
         #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
           
-        GAPConfig_TerminateConn();
+        //GAPConfig_TerminateConn();
           
         // 连接断开后停止采样  
-        ECGFunc_Stop();
+        //ECGFunc_Stop();
         //ADS1x9x_Reset();   
       }
       break;
