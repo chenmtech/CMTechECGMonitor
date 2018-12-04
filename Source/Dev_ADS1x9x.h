@@ -17,7 +17,7 @@
 */
 
 // 采样频率
-#define SR_SPS          250
+#define SR_SPS          125
 
 
 //SPI接口命令
