@@ -125,13 +125,15 @@ static void execute(uint8 cmd)
 {
   ADS_CS_LOW();
   
+  Delay_us(100);
+  
   // 发送停止采样命令
   SPI_ADS_SendByte(SDATAC);
   
   // 发送当前命令
   SPI_ADS_SendByte(cmd);
   
-  Delay_us(10);
+  Delay_us(100);
   
   ADS_CS_HIGH();
 }
@@ -204,7 +206,7 @@ extern void ADS1x9x_StandBy(void)
 extern void ADS1x9x_Reset(void)
 {
   ADS_RST_LOW();     //PWDN/RESET 低电平
-  Delay_us(10);
+  Delay_us(50);
   ADS_RST_HIGH();    //PWDN/RESET 高电平
   Delay_us(50);
 }
@@ -214,7 +216,9 @@ extern void ADS1x9x_StartConvert(void)
 {
   //设置连续采样模式
   ADS_CS_LOW();  
+  Delay_us(100);
   SPI_ADS_SendByte(SDATAC);
+  Delay_us(100);
   SPI_ADS_SendByte(RDATAC);  
   Delay_us(100);
   ADS_CS_HIGH();  
@@ -230,6 +234,7 @@ extern void ADS1x9x_StartConvert(void)
 extern void ADS1x9x_StopConvert(void)
 {
   ADS_CS_LOW();  
+  Delay_us(100);
   SPI_ADS_SendByte(SDATAC);
   Delay_us(100);
   ADS_CS_HIGH(); 
@@ -251,15 +256,16 @@ extern void ADS1x9x_ReadAllRegister(uint8 * pRegs)
 extern void ADS1x9x_ReadMultipleRegister(uint8 beginaddr, uint8 * pRegs, uint8 len)
 {
   ADS_CS_LOW();
-  
+  Delay_us(100);
   SPI_ADS_SendByte(SDATAC);
+  Delay_us(100);
   SPI_ADS_SendByte(beginaddr | 0x20);               //发送RREG命令
   SPI_ADS_SendByte(len-1);                          //长度-1
   
   for(uint8 i = 0; i < len; i++)
     *(pRegs+i) = SPI_ADS_SendByte(ADS_DUMMY_CHAR);
 
-  Delay_us(10);
+  Delay_us(100);
   ADS_CS_HIGH();
 }
 
@@ -269,13 +275,14 @@ extern uint8 ADS1x9x_ReadRegister(uint8 address)
   uint8 result = 0;
 
   ADS_CS_LOW();
-  
+  Delay_us(100);
   SPI_ADS_SendByte(SDATAC);  
+  Delay_us(100);
   SPI_ADS_SendByte(address | 0x20);         //发送RREG命令
   SPI_ADS_SendByte(0);                      //长度为1
   result = SPI_ADS_SendByte(ADS_DUMMY_CHAR);   //读寄存器
   
-  Delay_us(10);
+  Delay_us(100);
   ADS_CS_HIGH();
   return result;
 }
@@ -301,15 +308,16 @@ extern void ADS1x9x_SetRegsAsNormalECGSignal()
 extern void ADS1x9x_WriteMultipleRegister(uint8 beginaddr, const uint8 * pRegs, uint8 len)
 {
   ADS_CS_LOW();
-  
+  Delay_us(100);
   SPI_ADS_SendByte(SDATAC);  
+  Delay_us(100);
   SPI_ADS_SendByte(beginaddr | 0x40);
   SPI_ADS_SendByte(len-1);
   
   for(uint8 i = 0; i < len; i++)
     SPI_ADS_SendByte( *(pRegs+i) );
      
-  Delay_us(10); 
+  Delay_us(100); 
   ADS_CS_HIGH();
 } 
 
@@ -317,13 +325,14 @@ extern void ADS1x9x_WriteMultipleRegister(uint8 beginaddr, const uint8 * pRegs, 
 extern void ADS1x9x_WriteRegister(uint8 address, uint8 onebyte)
 {
   ADS_CS_LOW();
-  
+  Delay_us(100);
   SPI_ADS_SendByte(SDATAC);  
+  Delay_us(100);
   SPI_ADS_SendByte(address | 0x40);
   SPI_ADS_SendByte(0);  
   SPI_ADS_SendByte(onebyte);
   
-  Delay_us(10);
+  Delay_us(100);
   ADS_CS_HIGH();
 }  
 

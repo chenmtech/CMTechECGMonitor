@@ -133,6 +133,8 @@ extern void ECGFunc_StartEcg()
   byteCnt = 0;
   pBuf = ECGMonitor_GetECGDataPointer();
   
+  Delay_us(1000);
+  
   ADS1x9x_StartConvert();
   state = STATE_START_ECG;
   
@@ -162,6 +164,8 @@ extern void ECGFunc_Start1mV()
   byteCnt = 0;
   pBuf = ECGMonitor_GetECGDataPointer();
   
+  Delay_us(1000);
+  
   ADS1x9x_StartConvert();
   state = STATE_START_1MV;
   
@@ -177,7 +181,7 @@ extern void ECGFunc_Stop()
     ADS1x9x_StandBy();
   }
   
-  Delay_us(1000);
+  Delay_us(2000);
 }
 
 

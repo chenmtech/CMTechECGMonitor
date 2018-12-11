@@ -125,6 +125,8 @@ static void ecgMonitorServiceCB( uint8 paramID );
 // 初始化IO管脚
 static void ecgMonitorInitIOPin();
 
+static uint8 enable = false;
+
 
 /*********************************************************************
  * PROFILE CALLBACKS
@@ -321,7 +323,7 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
           HalLcdWriteString( "Advertising",  HAL_LCD_LINE_3 );
         #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
           
-        ECGFunc_Init();    
+        //ECGFunc_Init();    
       }
       break;
 
@@ -332,7 +334,7 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
         #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
           
         //GAPRole_GetParameter( GAPROLE_CONNHANDLE, &gapConnHandle );  
-        ECGFunc_Init();   
+        //ECGFunc_Init();   
       }
       break;
 
@@ -342,8 +344,13 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
           HalLcdWriteString( "Disconnected",  HAL_LCD_LINE_3 );
         #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
           
+        enable = false;
+        GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &enable );  
         // 连接断开后停止采样  
         ECGFunc_Stop();
+        ECGFunc_Init();
+        enable = true;
+        GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &enable );
         //ADS1x9x_Reset();
       }
       break;
@@ -354,9 +361,17 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
           HalLcdWriteString( "Timed Out",  HAL_LCD_LINE_3 );
         #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
         
+          
+        enable = false;
+        GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &enable );  
         // 连接断开后停止采样  
-        //ECGFunc_Stop();
-        //ADS1x9x_Reset();  
+        ECGFunc_Stop();
+        ECGFunc_Init();
+        enable = true;
+        GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &enable );
+          
+        //while(1)
+        //  HAL_SYSTEM_RESET();  
       }
       break;
 
