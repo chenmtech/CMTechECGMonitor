@@ -361,7 +361,7 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
           HalLcdWriteString( "Timed Out",  HAL_LCD_LINE_3 );
         #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
         
-          
+        /*  
         enable = false;
         GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &enable );  
         // 连接断开后停止采样  
@@ -369,9 +369,10 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
         ECGFunc_Init();
         enable = true;
         GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &enable );
-          
-        //while(1)
-        //  HAL_SYSTEM_RESET();  
+        */  
+        while(1) {
+          HAL_SYSTEM_RESET();  
+        }
       }
       break;
 
