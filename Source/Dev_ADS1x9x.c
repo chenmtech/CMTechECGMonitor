@@ -67,7 +67,7 @@ const static uint8 normalECGRegs[12] = {
   //CH2SET
   0x80,                     //关闭CH2
   //RLD_SENS     
-  0x23,                     //
+  0x00,                     //
   //LOFF_SENS (default)
   0x00,                     //default
   //LOFF_STAT
@@ -75,7 +75,7 @@ const static uint8 normalECGRegs[12] = {
   //RESP1
   0x02,                     //
   //RESP2
-  0x87,
+  0x07,
   //GPIO
   0x0C                      //
 };
@@ -302,6 +302,20 @@ extern void ADS1x9x_SetRegsAsTestSignal()
 extern void ADS1x9x_SetRegsAsNormalECGSignal()
 {
   ADS1x9x_WriteAllRegister(normalECGRegs);   
+}
+
+// 设置为采集1mV测试信号
+extern void ADS1x9x_ChangeToTestSignal() 
+{
+  ADS1x9x_WriteRegister(0x02, test1mVRegs[2]);
+  ADS1x9x_WriteRegister(0x04, test1mVRegs[4]);
+}
+
+// 设置为采集ECG信号
+extern void ADS1x9x_ChangeToEcgSignal() 
+{
+  ADS1x9x_WriteRegister(0x02, normalECGRegs[2]);
+  ADS1x9x_WriteRegister(0x04, normalECGRegs[4]);
 }
 
 // 写多个寄存器值

@@ -116,4 +116,8 @@ extern void ADS1x9x_SetRegsAsTestSignal();
 // 设置为采集正常ECG信号
 extern void ADS1x9x_SetRegsAsNormalECGSignal();
 
+extern void ADS1x9x_ChangeToTestSignal();
+
+extern void ADS1x9x_ChangeToEcgSignal();
+
 #endif

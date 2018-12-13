@@ -129,7 +129,7 @@ extern void ECGFunc_StartEcg()
   // 这里一定要延时，否则容易死机
   Delay_us(1000);
   
-  ADS1x9x_SetRegsAsNormalECGSignal();
+  ADS1x9x_ChangeToEcgSignal();
   byteCnt = 0;
   pBuf = ECGMonitor_GetECGDataPointer();
   
@@ -159,7 +159,7 @@ extern void ECGFunc_Start1mV()
   // 这里一定要延时，否则容易死机
   Delay_us(1000);
 
-  ADS1x9x_SetRegsAsTestSignal();  
+  ADS1x9x_ChangeToTestSignal();  
   
   byteCnt = 0;
   pBuf = ECGMonitor_GetECGDataPointer();
