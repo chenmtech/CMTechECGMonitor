@@ -36,7 +36,7 @@ const static uint8 test1mVRegs[12] = {
   //CH2SET
   0x80,                     //关闭CH2
   //RLD_SENS (default)      
-  0x00,                     //default
+  0x23,                     //default
   //LOFF_SENS (default)
   0x00,                     //default
   //LOFF_STAT
@@ -67,7 +67,7 @@ const static uint8 normalECGRegs[12] = {
   //CH2SET
   0x80,                     //关闭CH2
   //RLD_SENS     
-  0x00,                     //
+  0x23,                     //
   //LOFF_SENS (default)
   0x00,                     //default
   //LOFF_STAT
@@ -307,15 +307,41 @@ extern void ADS1x9x_SetRegsAsNormalECGSignal()
 // 设置为采集1mV测试信号
 extern void ADS1x9x_ChangeToTestSignal() 
 {
-  ADS1x9x_WriteRegister(0x02, test1mVRegs[2]);
-  ADS1x9x_WriteRegister(0x04, test1mVRegs[4]);
+  //ADS1x9x_WriteRegister(0x02, 0xA3);
+  //ADS1x9x_WriteRegister(0x04, 0x65);
+  ADS_CS_LOW();
+  Delay_us(100);
+  SPI_ADS_SendByte(SDATAC);  
+  Delay_us(100);
+  SPI_ADS_SendByte(0x02 | 0x40);
+  SPI_ADS_SendByte(0);  
+  SPI_ADS_SendByte(0xA3);
+  SPI_ADS_SendByte(0x04 | 0x40);
+  SPI_ADS_SendByte(0);  
+  SPI_ADS_SendByte(0x65);
+  
+  Delay_us(100);
+  ADS_CS_HIGH();
 }
 
 // 设置为采集ECG信号
 extern void ADS1x9x_ChangeToEcgSignal() 
 {
-  ADS1x9x_WriteRegister(0x02, normalECGRegs[2]);
-  ADS1x9x_WriteRegister(0x04, normalECGRegs[4]);
+  //ADS1x9x_WriteRegister(0x02, 0xA0);
+  //ADS1x9x_WriteRegister(0x04, 0x60);
+  ADS_CS_LOW();
+  Delay_us(100);
+  SPI_ADS_SendByte(SDATAC);  
+  Delay_us(100);
+  SPI_ADS_SendByte(0x02 | 0x40);
+  SPI_ADS_SendByte(0);  
+  SPI_ADS_SendByte(0xA0);
+  SPI_ADS_SendByte(0x04 | 0x40);
+  SPI_ADS_SendByte(0);  
+  SPI_ADS_SendByte(0x60);
+  
+  Delay_us(100);
+  ADS_CS_HIGH();
 }
 
 // 写多个寄存器值
