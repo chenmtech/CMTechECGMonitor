@@ -171,7 +171,7 @@ extern void ECGMonitor_Init( uint8 task_id )
   GAPConfig_EnableAdv(TRUE);
 
   //配置连接参数
-  GAPConfig_SetConnParam(20, 30, 5, 1000, 1);
+  GAPConfig_SetConnParam(20, 20, 5, 1000, 1);
 
   //配置GGS，设置设备名
   GAPConfig_SetGGSParam(attDeviceName);
