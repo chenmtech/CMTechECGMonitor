@@ -276,7 +276,6 @@
           <state>HAL_LED=FALSE</state>
           <state>HAL_UART=FALSE</state>
           <state>HAL_KEY=FALSE</state>
-          <state>HAL_ADC=TRUE</state>
           <state>CC2540_MINIDK</state>
         </option>
         <option>
@@ -6410,12 +6409,6 @@
       <name>$PROJ_DIR$\..\Source\dev_ads1x9x.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\Source\Dev_Battery.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Source\Dev_Battery.h</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\Source\hal_spi_ADS.c</name>
     </file>
     <file>
@@ -6423,12 +6416,6 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\Source\OSAL_CMTechECGMonitor.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Source\Service_Battery.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Source\Service_Battery.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\Source\Service_DevInfo.c</name>

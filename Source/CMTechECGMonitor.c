@@ -85,10 +85,6 @@
 
 #include "CMTechECGMonitor.h"
 
-#include "Dev_Battery.h"
-
-#include "Service_Battery.h"
-
 
 /*********************************************************************
  * 常量
@@ -96,13 +92,6 @@
 
 
 #define INVALID_CONNHANDLE                    0xFFFF
-
-
-// 停止采集状态
-#define STATUS_STOP           0     
-
-// 开始采集状态
-#define STATUS_START          1    
 
 
 /*********************************************************************
@@ -118,11 +107,7 @@ static gaprole_States_t gapProfileState = GAPROLE_INIT;
 // GAP GATT 设备名
 static uint8 attDeviceName[GAP_DEVICE_NAME_LEN] = "ECGMonitor";
 
-// 电池电量采集状态
-static uint8 batteryStatus = STATUS_STOP;
 
-// 电池电量测量周期，单位：10秒
-static uint8 batteryPeriod = 1;
 
 
 /*********************************************************************
@@ -137,20 +122,9 @@ static void peripheralStateNotificationCB( gaprole_States_t newState );
 // ECGMonitor服务回调函数
 static void ecgMonitorServiceCB( uint8 paramID );
 
-// 电池电量服务回调函数
-static void batteryServiceCB( uint8 paramID );
-
 // 初始化IO管脚
 static void ecgMonitorInitIOPin();
 
-// 启动电池电量测量
-static void batteryStart( void );
-
-// 停止电池电量测量
-static void batteryStop( void );
-
-// 读取传输电池电量数据
-static void batteryReadAndTransferData();
 
 
 /*********************************************************************
@@ -177,11 +151,7 @@ static ecgServiceCBs_t ecgMonitor_ServCBs =
   ecgMonitorServiceCB    // 温湿度服务回调函数实例，函数是Serice_TempHumid中声明的
 };
 
-// 电池电量服务回调结构体实例，结构体是Serice_Battery中声明的
-static batteryServiceCBs_t battery_ServCBs =
-{
-  batteryServiceCB    // 电池电量服务回调函数实例，函数是Serice_Battery中声明的
-};
+
 
 
 
@@ -219,9 +189,6 @@ extern void ECGMonitor_Init( uint8 task_id )
 #endif
   
   GATTConfig_SetECGMonitorService(&ecgMonitor_ServCBs);
-  
-  GATTConfig_SetBatteryService(&battery_ServCBs);
-  
 
   //在这里初始化GPIO
   //第一：所有管脚，reset后的状态都是输入加上拉
@@ -258,8 +225,6 @@ static void ecgMonitorInitIOPin()
   P1 = 0;   
   P2 = 0;  
   
-  P0 |= (0x01<<7); //P0.7用于控制电池电量的采集，高电平为截止。
-  
   // I2C的SDA, SCL设置为GPIO, 输出低电平，否则功耗很大
   //HalI2CSetAsGPIO();
 }
@@ -295,16 +260,6 @@ extern uint16 ECGMonitor_ProcessEvent( uint8 task_id, uint16 events )
 
     return ( events ^ ECGMONITOR_START_DEVICE_EVT );
   }
-  
-  if ( events & ECGMONITOR_START_BATTERY_EVT )
-  {
-    batteryReadAndTransferData();
-
-    if(batteryStatus == STATUS_START)
-      osal_start_timerEx( ecgMonitor_TaskID, ECGMONITOR_START_BATTERY_EVT, batteryPeriod*10000L );
-
-    return (events ^ ECGMONITOR_START_BATTERY_EVT);
-  }  
 
 
   // Discard unknown events
@@ -500,65 +455,6 @@ static void ecgMonitorServiceCB( uint8 paramID )
       break;
   }
 }
-
-static void batteryServiceCB( uint8 paramID )
-{
-  uint8 newValue;
-
-  switch (paramID)
-  {
-    case BATTERY_CTRL:
-      Battery_GetParameter( BATTERY_CTRL, &newValue );
-      
-      // 停止采集
-      if ( newValue == BATTERY_CTRL_STOP)  
-      {
-        batteryStop();
-      }
-      // 开始采集
-      else if ( newValue == BATTERY_CTRL_START) 
-      {
-        batteryStart();
-      }
-      
-      break;
-
-    case BATTERY_PERI:
-      Battery_GetParameter( BATTERY_PERI, &newValue );
-      batteryPeriod = newValue;
-
-      break;
-      
-    default:
-      // Should not get here
-      break;
-  }
-}
-
-// 启动电池电量测量
-static void batteryStart( void )
-{  
-  if(batteryStatus == STATUS_STOP) {
-    batteryStatus = STATUS_START;
-    osal_start_timerEx( ecgMonitor_TaskID, ECGMONITOR_START_BATTERY_EVT, batteryPeriod*10000L);
-  }
-}
-
-// 停止电池电量测量
-static void batteryStop( void )
-{  
-  osal_stop_timerEx( ecgMonitor_TaskID, ECGMONITOR_START_BATTERY_EVT);
-  batteryStatus = STATUS_STOP;
-}
-
-// 读取传输电池电量数据
-static void batteryReadAndTransferData()
-{
-  uint8 batteryData = Battery_Measure();
-
-  Battery_SetParameter( BATTERY_DATA, 1, &batteryData);   
-}
-
 
 //extern void CMTechECGMonitor_SendECGSignals(uint8* pData, uint8 len)
 //{

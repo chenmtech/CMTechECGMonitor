@@ -8,14 +8,10 @@
 
 #include "Service_ECGMonitor.h"
 
-#include "Service_Battery.h"
-
 //配置ECGMonitor服务
 extern void GATTConfig_SetECGMonitorService(ecgServiceCBs_t* appCBs);
 
 
-//配置电池电量服务
-extern void GATTConfig_SetBatteryService(batteryServiceCBs_t* appCBs);
 
 
 
