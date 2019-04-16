@@ -258,6 +258,7 @@ static void ecgMonitorInitIOPin()
   P1 = 0;   
   P2 = 0;  
   
+  P0DIR &= ~(1<<6);
   P0 |= (0x01<<7); //P0.7用于控制电池电量的采集，高电平为截止。
   
   // I2C的SDA, SCL设置为GPIO, 输出低电平，否则功耗很大

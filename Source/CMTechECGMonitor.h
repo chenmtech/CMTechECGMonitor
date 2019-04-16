@@ -14,7 +14,7 @@
 
 // ECGMonitor任务事件
 #define ECGMONITOR_START_DEVICE_EVT             0x0001     // 启动设备事件
-#define ECGMONITOR_START_BATTERY_EVT            0x0002     // 启动电池电量采集事件
+#define ECGMONITOR_START_BATTERY_EVT            0x0010     // 启动电池电量采集事件
 
 // 测量控制标记值
 #define ECGMONITOR_CTRL_STOP                    0x00    // 停止测量

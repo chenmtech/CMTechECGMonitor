@@ -48,7 +48,7 @@ static CONST gattAttrType_t batteryService = { ATT_UUID_SIZE, batteryServUUID };
 
 // 电池电量数据的相关属性：可读可通知
 static uint8 batteryDataProps = GATT_PROP_READ | GATT_PROP_NOTIFY;
-static uint8 batteryData[] = {0};
+static uint8 batteryData = 0;
 static gattCharCfg_t batteryDataConfig[GATT_MAX_NUM_CONN];
 
 // 电池电量测量控制点的相关属性：可读可写
@@ -85,7 +85,7 @@ static gattAttribute_t batteryServAttrTbl[] =
         { ATT_UUID_SIZE, batteryDataUUID },
         GATT_PERMIT_READ, 
         0, 
-        batteryData 
+        &batteryData 
       }, 
       
       // 电池电量数据特征的配置
@@ -384,10 +384,10 @@ extern bStatus_t Battery_SetParameter( uint8 param, uint8 len, void *value )
     case BATTERY_DATA:
       if ( len == sizeof(uint8) )
       {
-        VOID osal_memcpy( batteryData, value, 1 );
+        batteryData = *((uint8*)value);
         
         // See if Notification has been enabled
-        GATTServApp_ProcessCharCfg( batteryDataConfig, batteryData, FALSE,
+        GATTServApp_ProcessCharCfg( batteryDataConfig, &batteryData, FALSE,
                                    batteryServAttrTbl, GATT_NUM_ATTRS( batteryServAttrTbl ),
                                    INVALID_TASK_ID );
       }
@@ -438,7 +438,7 @@ extern bStatus_t Battery_GetParameter( uint8 param, void *value )
   {
     // 获取电池电量数据
     case BATTERY_DATA:
-      VOID osal_memcpy( value, batteryData, 1 );
+      *((uint8*)value) = batteryData;
       break;
 
     // 获取测量控制点  
