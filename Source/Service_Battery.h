@@ -8,14 +8,10 @@
 
 // 特征标记位
 #define BATTERY_DATA            0       //电池电量数据
-#define BATTERY_CTRL            1       //电池电量测量控制
-#define BATTERY_PERI            2       //电池电量测量周期
 
 // 服务和特征的16位UUID
 #define BATTERY_SERV_UUID               0xAA90     // 电池电量服务UUID
 #define BATTERY_DATA_UUID               0xAA91     // 电池电量数据UUID
-#define BATTERY_CTRL_UUID               0xAA92     // 电池电量测量控制UUID
-#define BATTERY_PERI_UUID               0xAA93     // 电池电量测量周期UUID
 
 // 服务的bit field
 #define BATTERY_SERVICE               0x00000001
