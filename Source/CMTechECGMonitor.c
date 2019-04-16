@@ -178,7 +178,7 @@ extern void ECGMonitor_Init( uint8 task_id )
 
   // GAP 配置
   //配置广播参数
-  GAPConfig_SetAdvParam(2000, ECGMONITOR_SERV_UUID);
+  GAPConfig_SetAdvParam(3000, ECGMONITOR_SERV_UUID);
   
   // 初始化立刻广播
   GAPConfig_EnableAdv(TRUE);
@@ -239,12 +239,13 @@ static void ecgMonitorInitIOPin()
 
   P0 = 0; 
   P1 = 0;   
-  P2 = 0;  
+  P2 = 0; 
   
   // 电池电压测量的设置
-  // P0_7为控制端，低电平启动，高电平截止。这里设置为输出高电平
+  // P0_7为控制端，低电平启动，高电平截止。
+  // 这里设置为输出高电平
   P0DIR |= (1<<7);
-  P0 |= (0x01<<7); 
+  P0 |= (1<<7); 
   
   // P0_6为电池电压的ADC测量端，设置为输入
   P0DIR &= ~(1<<6);
@@ -412,7 +413,10 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
           
         // 连接断开后停止采样  
         //ECGFunc_Stop();
-        //ADS1x9x_Reset();  
+        //ADS1x9x_Reset();
+        while(1) {
+          HAL_SYSTEM_RESET();  
+        }  
       }
       break;
 
@@ -427,6 +431,9 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
         // 连接断开后停止采样  
         //ECGFunc_Stop();
         //ADS1x9x_Reset();   
+        while(1) {
+          HAL_SYSTEM_RESET();  
+        }  
       }
       break;
 
