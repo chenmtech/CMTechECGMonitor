@@ -35,6 +35,8 @@ static uint8 *pBuf;
 // 当前数据包中已经保存的数据字节数
 static uint8 byteCnt = 0;
 
+static int packNum = 0;
+
 
 
 
@@ -47,6 +49,13 @@ static void ECGFunc_ProcessDataCB(int data);
 static void ECGFunc_ProcessDataCB(int data)
 {
   if(state == STATE_STOP) return;
+  
+  if(byteCnt == 0) {
+    *pBuf++ = (uint8)(packNum & 0x00FF);
+    *pBuf++ = (uint8)((packNum >> 8) & 0x00FF);
+    byteCnt += 2;
+    if(++packNum == 16) packNum = 0;
+  }
   
   *pBuf++ = (uint8)(data & 0x00FF);  
   *pBuf++ = (uint8)((data >> 8) & 0x00FF);
@@ -107,6 +116,8 @@ extern void ECGFunc_Init()
   
   byteCnt = 0;
   
+  packNum = 0;
+  
   Delay_us(1000);
   
 }
@@ -131,6 +142,7 @@ extern void ECGFunc_StartEcg()
   
   ADS1x9x_ChangeToEcgSignal();
   byteCnt = 0;
+  packNum = 0;
   pBuf = ECGMonitor_GetECGDataPointer();
   
   Delay_us(1000);
@@ -160,8 +172,8 @@ extern void ECGFunc_Start1mV()
   Delay_us(1000);
 
   ADS1x9x_ChangeToTestSignal();  
-  
   byteCnt = 0;
+  packNum = 0;
   pBuf = ECGMonitor_GetECGDataPointer();
   
   Delay_us(1000);
