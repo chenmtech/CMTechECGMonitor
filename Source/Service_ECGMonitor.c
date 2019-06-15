@@ -76,7 +76,7 @@ CONST uint8 ecgLeadTypeUUID[ATT_UUID_SIZE] =
 static CONST gattAttrType_t ecgService = { ATT_UUID_SIZE, ecgServUUID };
 
 // ECG数据特征
-static uint8 ecgDataProps = GATT_PROP_READ | GATT_PROP_INDICATE;
+static uint8 ecgDataProps = GATT_PROP_READ | GATT_PROP_NOTIFY;
 static uint8 ecgData[ECG_PACKET_LEN] = {0};
 static gattCharCfg_t ecgDataConfig[GATT_MAX_NUM_CONN];  //每个连接上对应有一个配置值
 
@@ -354,7 +354,7 @@ static bStatus_t ecgMonitor_WriteAttrCB( uint16 connHandle, gattAttribute_t *pAt
     // 写ECG数据的CCC  
     case GATT_CLIENT_CHAR_CFG_UUID:
       status = GATTServApp_ProcessCCCWriteReq( connHandle, pAttr, pValue, len,
-                                              offset, GATT_CLIENT_CFG_INDICATE );
+                                              offset, GATT_CLIENT_CFG_NOTIFY );
       break;
 
     default:
