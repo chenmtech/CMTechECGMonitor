@@ -43,10 +43,10 @@ static int packNum = 0;
 /*****************************************************
  * 局部函数
  */
-static void ECGFunc_ProcessDataCB(int data);
+static void ECGFunc_ProcessDataCB(uint8 low, uint8 high);
 
 // 处理采集到的一个数据
-static void ECGFunc_ProcessDataCB(int data)
+static void ECGFunc_ProcessDataCB(uint8 low, uint8 high)
 {
   if(state == STATE_STOP) return;
   
@@ -57,8 +57,8 @@ static void ECGFunc_ProcessDataCB(int data)
     if(++packNum == 16) packNum = 0;
   }
   
-  *pBuf++ = (uint8)(data & 0x00FF);  
-  *pBuf++ = (uint8)((data >> 8) & 0x00FF);
+  *pBuf++ = low;  
+  *pBuf++ = high;
   byteCnt += 2;
 
   // 达到数据包长度

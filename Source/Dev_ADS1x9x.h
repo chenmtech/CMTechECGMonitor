@@ -64,7 +64,7 @@
 
 
 //采样到数据后的回调处理函数类型
-typedef void (*ADS_DataCB_t)(int oneData); 
+typedef void (*ADS_DataCB_t)(uint8 low, uint8 high); 
 
 
 

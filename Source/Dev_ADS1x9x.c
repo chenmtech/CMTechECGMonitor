@@ -227,7 +227,7 @@ extern void ADS1x9x_StartConvert(void)
   
   //START 高电平
   ADS_START_HIGH();    
-  Delay_us(160); 
+  Delay_us(32000); 
 }
 
 // 停止采样
@@ -413,13 +413,6 @@ static void ADS1291_ReadOneSample(void)
   
   ADS_CS_HIGH();
   
-  long value = *((long *)data);
-  
-  // 带符号右移
-  value = (value >> 10);       //本来右移8位就是实际的数值，但是可能会有一些低位的噪声位，所以需要选择一个合适的右移位数
-  
-  //tmp = (tmp > 32767) ? 32767 : (tmp < -32767) ? -32767 : tmp;
-  
   if(ADS_DataCB != 0)
-    ADS_DataCB((int)(value));
+    ADS_DataCB(data[2], data[3]);
 }
