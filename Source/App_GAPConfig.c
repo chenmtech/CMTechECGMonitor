@@ -128,8 +128,8 @@ extern void GAPConfig_SetGGSParam(uint8* devName)
 // passkey : 配对密码
 extern void GAPConfig_SetBondingParam(uint32 passkey, uint8 pairmode)
 {
-  uint8 mitm = TRUE;
-  uint8 ioCap = GAPBOND_IO_CAP_DISPLAY_ONLY; //要求手机输入配对密码
+  uint8 mitm = FALSE;
+  uint8 ioCap = GAPBOND_IO_CAP_NO_INPUT_NO_OUTPUT; //要求手机输入配对密码
   uint8 bonding = TRUE;
   GAPBondMgr_SetParameter( GAPBOND_DEFAULT_PASSCODE, sizeof ( uint32 ), &passkey );
   GAPBondMgr_SetParameter( GAPBOND_PAIRING_MODE, sizeof ( uint8 ), &pairmode );

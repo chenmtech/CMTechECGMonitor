@@ -190,7 +190,7 @@ extern void ECGMonitor_Init( uint8 task_id )
   GAPConfig_SetGGSParam(attDeviceName);
 
   //≈‰÷√∞Û∂®≤Œ ˝
-  GAPConfig_SetBondingParam(0, GAPBOND_PAIRING_MODE_WAIT_FOR_REQ);
+  GAPConfig_SetBondingParam(0, GAPBOND_PAIRING_MODE_NO_PAIRING);
 
   // Initialize GATT attributes
   GGS_AddService( GATT_ALL_SERVICES );            // GAP
