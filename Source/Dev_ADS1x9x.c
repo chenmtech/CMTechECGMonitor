@@ -97,7 +97,7 @@ static ADS_DataCB_t ADS_DataCB;
 static uint8 status[3] = {0};
 
 //读取的通道数据字节
-static uint8 data[4];
+static uint8 data[3];
 
 // 每次读取的数据长度
 static uint8 dataLength = DATA_LEN;
@@ -407,14 +407,14 @@ static void ADS1291_ReadOneSample(void)
   status[1] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);
   status[2] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);  
   
-  data[3] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);   //MSB
-  data[2] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);
-  data[1] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);   //LSB
+  data[2] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);   //MSB
+  data[1] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);
+  data[0] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);   //LSB
   
   ADS_CS_HIGH();
  
   if(ADS_DataCB != 0)
-    ADS_DataCB(data[2], data[3]);
+    ADS_DataCB(data[1], data[2]);
   
   //int16 ecg = (int16)((data[2] & 0x00FF) | ((data[3] & 0x00FF) << 8));
   
