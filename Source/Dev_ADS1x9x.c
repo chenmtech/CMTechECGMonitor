@@ -412,7 +412,12 @@ static void ADS1291_ReadOneSample(void)
   data[1] = SPI_ADS_SendByte(ADS_DUMMY_CHAR);   //LSB
   
   ADS_CS_HIGH();
-  
+ 
   if(ADS_DataCB != 0)
     ADS_DataCB(data[2], data[3]);
+  
+  //int16 ecg = (int16)((data[2] & 0x00FF) | ((data[3] & 0x00FF) << 8));
+  
+  //if(ADS_DataCB != 0)
+  //  ADS_DataCB(LO_UINT16(ecg), HI_UINT16(ecg));
 }
